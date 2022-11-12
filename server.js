@@ -12,6 +12,8 @@ const APIRouter = require("./utils/router");
 const { socketConfig } = require("./utils/socket");
 const PORT = process.env.PORT || 4000;
 
+require("dotenv").config();
+
 app
   .use(cors())
   .use(morgan("dev"))
