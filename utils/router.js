@@ -11,6 +11,7 @@ const {
   newFixtureController,
   updateFixturesController,
   deleteFixturesController,
+  getFixturesByMarketplaceSlugController
 } = require("../api/controllers/Fixture");
 const {
   getQuestionaireController,
@@ -49,8 +50,9 @@ APIRouter.get("/marketplace-specific", getSpecificMarketplace)
  *                     Fixture API Routers
  * ****************************************************************
  */
-APIRouter.get("/fixture", getFixturesController);
-APIRouter.get("/fixture-specific", getSpecificFixtureController)
+APIRouter.get("/fixture", getFixturesController)
+.get("/fixture-specific", getSpecificFixtureController)
+.get("/fixture-marketplace", getFixturesByMarketplaceSlugController)
   .post("/new-fixture", newFixtureController)
   .patch("/update-fixture", updateFixturesController)
   .delete("/delete-fixture", deleteFixturesController);
