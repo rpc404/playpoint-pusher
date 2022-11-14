@@ -25,6 +25,17 @@ module.exports = {
 
   /**
    * ****************************************************************
+   *                  @dev Get Fixtures by Marketplace Id
+   * ****************************************************************
+   */
+   getFixturesByMarketplaceSlugController: expressAsyncHandler(async (req, res) => {
+    const marketplaceSlug = req.query.marketplaceSlug
+    const fixtures = await Fixture.find({ marketplaceSlug: sanitizeQueryInput(marketplaceSlug)});
+    res.status(200).json({ data: fixtures });
+  }),
+
+  /**
+   * ****************************************************************
    *                     @dev New Fixture
    * ****************************************************************
    */
