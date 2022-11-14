@@ -6,55 +6,46 @@ const { sanitizeQueryInput } = require("../../utils/QuerySanitizer");
 
 module.exports = {
   /**
-   * ****************************************************************
-   *               @dev Get Specific Marketplaces
-   * ****************************************************************
+   * @dev Get Specific Marketplaces
    */
   getSpecificMarketplace: expressAsyncHandler(async (req, res) => {
-    const { marketplaceSlug } = req.body;
+    marketplace
+      ? res
+          .json({
+            marketplace: await Marketplace.findOne({
+              marketplaceSlug: sanitizeQueryInput(
+                req.params["marketplaceSlug"]
+              ),
+            }),
+          })
+          .status(200)
+      : res.status(404).json({ msg: "Marketplace not found!" });
+  }),
 
-    const marketplace = Marketplace.findOne({
-      marketplaceSlug: sanitizeQueryInput(marketplaceSlug),
-    });
-    if (marketplace) {
-      res.status(200).json({
-        data: marketplace,
-      });
-    } else {
-      res.status(400).json({
-        message: `Oops! marketplace not found for ${marketplaceSlug}! Try changing marketplace slug!`,
-      });
-    }
-  }),
   /**
-   * ****************************************************************
-   *                  @dev Get All Marketplaces
-   * ****************************************************************
+   * @dev Get All Marketplaces
    */
-  getMarketplaces: expressAsyncHandler(async (req, res) => {
-    const getMarketplaces = await Marketplace.find();
+  getMarketplaces: expressAsyncHandler(async (req, res) =>
     res.status(200).json({
-      data: getMarketplaces,
-    });
-  }),
+      marketplaces: await Marketplace.find(),
+    })
+  ),
+
   /**
-   * ****************************************************************
-   *                     @dev New Marketplaces
-   * ----------------------------------------------------------------
+   * @dev New Marketplaces
+   *
    * @dev Algorithm
    * 1. get formData inputs => req.body, req.file(from multer)
    * 2. read uploaded file and upload to ImageKit
-   * 3. create new document on marketplace collection,
-   * marketplaceCoverImage is from imagekit uploaded result url
+   * 3. create new document on marketplace collection, marketplaceCoverImage is from imagekit uploaded result url
    * 4. delete image from local storage of server
-   * ****************************************************************
    */
-  // deepcode ignore NoRateLimitingForExpensiveWebOperation: Already configured on server.js
+  // deepcode ignore NoRateLimitingForExpensiveWebOperation: Rate Limiting already configured on server.js
   newMarketplace: expressAsyncHandler(async (req, res) => {
     const { marketplaceName, marketplaceSlug, tags } = req.body;
     const { filename } = req.file;
 
-    // deepcode ignore PT: <please specify a reason of ignoring this>
+    // deepcode ignore PT: Heroku won't expose file system
     fs.readFile(__basedir + "/uploads/" + filename, (err, data) => {
       if (err) throw err;
 
@@ -84,66 +75,78 @@ module.exports = {
               message: "Marketplace created successfully!",
             });
 
-            //   deepcode ignore PT: <please specify a reason of ignoring this>
+            // deepcode ignore PT: <please specify a reason of ignoring this>
             fs.unlinkSync(__basedir + "/uploads/" + filename);
           }
         })
       );
     });
   }),
+
   /**
-   * ****************************************************************
-   *                     @dev Update Marketplace
-   * ----------------------------------------------------------------
-   * *@dev marketplace coverimage can't be updated
-   * ****************************************************************
+   * @dev Update Marketplace
+   * @note marketplace coverimage can't be updated => after beta it must be done
    */
   updateMarketplace: expressAsyncHandler(async (req, res) => {
-    const { marketplaceName, tags, marketplaceSlug } =
-      req.body;
-      console.log(req.body)
+    const { marketplaceName, tags } = req.body;
 
-    const tempMarketplace = await Marketplace.findOne({
-      marketplaceSlug: sanitizeQueryInput(marketplaceSlug),
-    });
+    const query = {
+      marketplaceSlug: sanitizeQueryInput(req.params["marketplaceSlug"]),
+    };
+
+    const tempMarketplace = await Marketplace.findOne(query);
 
     if (tempMarketplace) {
-      await Marketplace.updateOne(
-        { marketplaceSlug },
-        {
-          $set: {
-            marketplaceName: marketplaceName || tempMarketplace.marketplaceName,
-            marketplaceSlug: tempMarketplace.marketplaceSlug,
-            marketplaceCoverImage: tempMarketplace.marketplaceCoverImage,
-            tags: tags || tempFixture.tags,
-          },
-        }
-      );
+      await Marketplace.updateOne(query, {
+        $set: {
+          marketplaceName: marketplaceName || tempMarketplace.marketplaceName,
+          /**
+           * @dev marketplace slug must be able to be updated
+           */
+          marketplaceSlug,
+          marketplaceCoverImage: tempMarketplace.marketplaceCoverImage,
+
+          /**
+           * @note marketplace cover image must be able to be updated
+           * marketplaceCoverImage: marketplaceCoverImage || tempMarketplace.marketplaceCoverImage,
+           */
+
+          // deepcode ignore HTTPSourceWithUncheckedType: <please specify a reason of ignoring this>
+          tags: tags.split(",") || tempMarketplace.tags,
+        },
+      });
 
       res.status(200).json({
         message: `Marketplace ${marketplaceSlug} updated successfully!`,
       });
+    } else
+      res.status(400).json({
+        message: "No marketplace, bad request! Try checking marketplace slug.",
+      });
+  }),
+
+  /**
+   * @dev Delete Marketplace
+   */
+  deleteMarketplace: expressAsyncHandler(async (req, res) => {
+    const query = {
+      marketplaceSlug: sanitizeQueryInput(req.params["marketplaceSlug"]),
+    };
+
+    const marketplace = await Marketplace.findOne(query).select(
+      "marketplaceCoverImage"
+    );
+    if (marketplace) {
+      await Marketplace.deleteOne(query);
+      await imageKit.deleteFile(marketplace?.marketplaceCoverImage?.fileId);
+
+      res.status(200).json({
+        message: `Marketplace ${req.params["marketplaceSlug"]} deleted successfully!`,
+      });
     } else {
-      return res.status(400).json({
+      res.status(400).json({
         message: "No marketplace, bad request! Try checking marketplace slug.",
       });
     }
-  }),
-  /**
-   * ****************************************************************
-   *                     @dev Delete Marketplace
-   * ****************************************************************
-   */
-  deleteMarketplace: expressAsyncHandler(async (req, res) => {
-    const { marketplaceSlug } = req.body;
-    const marketplace = await Marketplace.findOne({
-      marketplaceSlug: sanitizeQueryInput(marketplaceSlug),
-    });
-
-    await Marketplace.deleteOne({ marketplaceSlug });
-    await imageKit.deleteFile(marketplace.marketplaceCoverImage.fileId);
-    res.status(200).json({
-      message: `Marketplace ${marketplaceSlug} deleted successfully!`,
-    });
   }),
 };

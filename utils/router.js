@@ -36,14 +36,14 @@ const APIRouter = require("express").Router();
  * ****************************************************************
  */
 APIRouter.get("/marketplace", getMarketplaces);
-APIRouter.get("/marketplace-specific", getSpecificMarketplace)
+APIRouter.get("/marketplace-specific/:marketplaceSlug", getSpecificMarketplace)
   .post(
     "/new-marketplace",
     multerUpload.single("marketplaceCoverImage"),
     newMarketplace
   )
-  .patch("/update-marketplace", updateMarketplace)
-  .delete("/delete-marketplace", deleteMarketplace);
+  .patch("/update-marketplace/:marketplaceSlug", updateMarketplace)
+  .delete("/delete-marketplace/:marketplaceSlug", deleteMarketplace);
 
 /**
  * ****************************************************************
