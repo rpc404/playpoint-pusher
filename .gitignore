@@ -108,3 +108,5 @@ dist
 *.lock
 
 package-lock.json
+
+snyk-linux
