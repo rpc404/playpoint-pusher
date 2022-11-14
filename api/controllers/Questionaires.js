@@ -3,48 +3,28 @@ const expressAsyncHandler = require("express-async-handler");
 const Questionaire = require("../models/Questionaire");
 
 module.exports = {
+  getSpecificQuestionaireController: expressAsyncHandler(async (req, res) => {
+    res
+      .status(200)
+      .json({ questionaire: await Questionaire.findById(req.params["id"]) });
+  }),
   /**
-   * ****************************************************************
-   *                  @dev Get All Questionaires
-   * ****************************************************************
+   * @dev Get All Questionaires
    */
   getQuestionaireController: expressAsyncHandler(async (req, res) => {
-    // const questionaires = await Questionaire.find().populate("fixtureId");
-    const questionaires = await Questionaire.find();
-    res.status(200).json({ data: questionaires });
+    res.status(200).json({ questionaires: await Questionaire.find() });
   }),
   /**
-   * ****************************************************************
-   *                     @dev New Questionaires
-   * ****************************************************************
+   * @dev New Questionaires
    */
-  newQuestionaireController: expressAsyncHandler(async (req, res) => {
-    const {
-      fixtureId,
-      questionaireType,
-      questionairePrice,
-      questionaires,
-      poolType,
-    } = req.body;
-
-    console.log(questionaires)
-
-    const newQuestionaire = new Questionaire({
-      fixtureId,
-      questionaireType,
-      questionairePrice,
-      questionaires,
-      poolType,
-    });
-
-    await newQuestionaire.save();
-
-    res.status(200).json({ message: "New Questionaire created successfully!" });
-  }),
+  newQuestionaireController: expressAsyncHandler(async (req, res) =>
+    res.status(200).json({
+      message: "New Questionaire created successfully!",
+      response: await Questionaire.create(req.body),
+    })
+  ),
   /**
-   * ****************************************************************
-   *                     @dev Update Questionaire
-   * ****************************************************************
+   * @dev Update Questionaire
    */
   updateQuestionaireController: expressAsyncHandler(async (req, res) => {
     const { _id } = req.body;
@@ -79,9 +59,7 @@ module.exports = {
     res.status(200).json({ message: "Questionaire updated successfully!" });
   }),
   /**
-   * ****************************************************************
-   *                     @dev Delete Questionaire
-   * ****************************************************************
+   * @dev Delete Questionaire
    */
   deleteQuestionaireController: expressAsyncHandler(async (req, res) => {
     const { _id } = req.body;

@@ -57,21 +57,17 @@ module.exports = {
         expressAsyncHandler(async (error, result) => {
           if (error) console.error(error);
           else {
-            let newMarketplaceItem = new Marketplace({
-              marketplaceName,
-              marketplaceSlug,
-              marketplaceCoverImage: {
-                fileId: result.fileId,
-                url: result?.url,
-              },
-              // deepcode ignore HTTPSourceWithUncheckedType: <please specify a reason of ignoring this>
-              tags: tags.split(","),
-            });
-
-            await newMarketplaceItem.save();
-
             res.status(200).json({
-              status: 200,
+              response: await Marketplace.create({
+                marketplaceName,
+                marketplaceSlug,
+                marketplaceCoverImage: {
+                  fileId: result.fileId,
+                  url: result?.url,
+                },
+                // deepcode ignore HTTPSourceWithUncheckedType: <please specify a reason of ignoring this>
+                tags: tags.split(","),
+              }),
               message: "Marketplace created successfully!",
             });
 
@@ -96,32 +92,32 @@ module.exports = {
 
     const tempMarketplace = await Marketplace.findOne(query);
 
-    if (tempMarketplace) {
-      await Marketplace.updateOne(query, {
-        $set: {
-          marketplaceName: marketplaceName || tempMarketplace.marketplaceName,
-          /**
-           * @dev marketplace slug must be able to be updated
-           */
-          marketplaceSlug,
-          marketplaceCoverImage: tempMarketplace.marketplaceCoverImage,
-
-          /**
-           * @note marketplace cover image must be able to be updated
-           * marketplaceCoverImage: marketplaceCoverImage || tempMarketplace.marketplaceCoverImage,
-           */
-
-          // deepcode ignore HTTPSourceWithUncheckedType: <please specify a reason of ignoring this>
-          tags: tags.split(",") || tempMarketplace.tags,
-        },
-      });
-
+    if (tempMarketplace)
       res.status(200).json({
         message: `Marketplace ${marketplaceSlug} updated successfully!`,
+        response: await Marketplace.updateOne(query, {
+          $set: {
+            marketplaceName: marketplaceName || tempMarketplace.marketplaceName,
+            /**
+             * @dev marketplace slug must be able to be updated
+             */
+            marketplaceSlug,
+            marketplaceCoverImage: tempMarketplace.marketplaceCoverImage,
+
+            /**
+             * @note marketplace cover image must be able to be updated
+             * marketplaceCoverImage: marketplaceCoverImage || tempMarketplace.marketplaceCoverImage,
+             */
+
+            // deepcode ignore HTTPSourceWithUncheckedType: <please specify a reason of ignoring this>
+            tags: tags.split(",") || tempMarketplace.tags,
+          },
+        }),
       });
-    } else
+    else
       res.status(400).json({
         message: "No marketplace, bad request! Try checking marketplace slug.",
+        response: null,
       });
   }),
 
@@ -136,6 +132,7 @@ module.exports = {
     const marketplace = await Marketplace.findOne(query).select(
       "marketplaceCoverImage"
     );
+
     if (marketplace) {
       await Marketplace.deleteOne(query);
       await imageKit.deleteFile(marketplace?.marketplaceCoverImage?.fileId);
