@@ -4,18 +4,14 @@ const Result = require("../models/Result");
 
 module.exports = {
   /**
-   * ****************************************************************
-   *                  @dev Get All Results
-   * ****************************************************************
+   * @dev Get All Results
    */
   getResultController: expressAsyncHandler(async (req, res) => {
     const results = await Result.find();
     res.status(200).json({ data: results });
   }),
   /**
-   * ****************************************************************
-   *                  @dev New Results
-   * ****************************************************************
+   * @dev New Results
    */
   newResultController: expressAsyncHandler(async (req, res) => {
     const { questionaireId, results } = req.body;
@@ -29,9 +25,7 @@ module.exports = {
     res.status(200).json({ message: "Results Created Successfully!" });
   }),
   /**
-   * ****************************************************************
-   *                  @dev Update Results
-   * ****************************************************************
+   * @dev Update Results
    */
   updateResultController: expressAsyncHandler(async (req, res) => {
     const { _id, questionaireId, results } = req.body;
@@ -49,9 +43,7 @@ module.exports = {
     res.status(200).json({ message: "Result updated successfully!" });
   }),
   /**
-   * ****************************************************************
-   *                  @dev Delete Result
-   * ****************************************************************
+   * @dev Delete Result
    */
   deleteResultController: expressAsyncHandler(async (req, res) => {
     const { _id } = req.body;

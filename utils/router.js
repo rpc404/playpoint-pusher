@@ -18,6 +18,7 @@ const {
   newQuestionaireController,
   updateQuestionaireController,
   deleteQuestionaireController,
+  getSpecificQuestionaireController,
 } = require("../api/controllers/Questionaires");
 const { multerUpload } = require("./MulterConfig");
 const {
@@ -31,9 +32,7 @@ const { getCountStatus } = require("../api/helpers/adminStats");
 const APIRouter = require("express").Router();
 
 /**
- * ****************************************************************
- *                   Marketplace API Routers
- * ****************************************************************
+ * @note Marketplace API Routers
  */
 APIRouter.get("/marketplace-specific/:marketplaceSlug", getSpecificMarketplace)
   .get("/marketplace", getMarketplaces)
@@ -46,31 +45,29 @@ APIRouter.get("/marketplace-specific/:marketplaceSlug", getSpecificMarketplace)
   .delete("/delete-marketplace/:marketplaceSlug", deleteMarketplace);
 
 /**
- * ****************************************************************
- *                     Fixture API Routers
- * ****************************************************************
+ * @note Fixture API Routers
  */
 APIRouter.get("/fixture", getFixturesController)
   .get("/fixture-specific/:id", getSpecificFixtureController)
-  .get("/fixture-marketplace/:marketplaceSlug", getFixturesByMarketplaceSlugController)
+  .get(
+    "/fixture-marketplace/:marketplaceSlug",
+    getFixturesByMarketplaceSlugController
+  )
   .post("/new-fixture", newFixtureController)
   .patch("/update-fixture/:id", updateFixturesController)
   .delete("/delete-fixture/:id", deleteFixturesController);
 
 /**
- * ****************************************************************
- *                    Questionaires API Routers
- * ****************************************************************
+ * @note Questionaires API Routers
  */
 APIRouter.get("/questionaires", getQuestionaireController)
+  .get("/questionaires/:id", getSpecificQuestionaireController)
   .post("/new-questionaire", newQuestionaireController)
-  .patch("/update-questionaire", updateQuestionaireController)
-  .delete("/delete-questionaire", deleteQuestionaireController);
+  .patch("/update-questionaire/:id", updateQuestionaireController)
+  .delete("/delete-questionaire/:id", deleteQuestionaireController);
 
 /**
- * ****************************************************************
- *                       Results API Routers
- * ****************************************************************
+ * @note Results API Routers
  */
 APIRouter.get("/results", getResultController)
   .post("/new-result", newResultController)
@@ -78,16 +75,12 @@ APIRouter.get("/results", getResultController)
   .delete("/delete-result", deleteResultController);
 
 /**
- * ****************************************************************
- *                       Active Prediction
- * ****************************************************************
+ * @note Active Prediction
  */
 // APIRouter.get("/active-prediction")
 
 /**
- * ****************************************************************
- *                       Admin Status
- * ****************************************************************
+ * @note Admin Status
  */
 APIRouter.get("/admin-stats", getCountStatus);
 
