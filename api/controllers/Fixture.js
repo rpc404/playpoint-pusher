@@ -4,131 +4,91 @@ const { sanitizeQueryInput } = require("../../utils/QuerySanitizer");
 
 module.exports = {
   /**
-   * ****************************************************************
-   *               @dev Get Specific Marketplaces
-   * ****************************************************************
+   * @dev Get Specific Marketplaces
    */
   getSpecificFixtureController: expressAsyncHandler(async (req, res) => {
-    const { _id } = req.body;
-    const fixture = await Fixture.findOne({ _id: sanitizeQueryInput(_id) });
-    res.status(200).send({data: fixture});
-  }),
-  /**
-   * ****************************************************************
-   *                  @dev Get All Fixtures
-   * ****************************************************************
-   */
-  getFixturesController: expressAsyncHandler(async (req, res) => {
-    const fixtures = await Fixture.find();
-    res.status(200).json({ data: fixtures });
+    res.status(200).send({
+      fixture: await Fixture.findOne({
+        _id: sanitizeQueryInput(req.params["id"]),
+      }),
+    });
   }),
 
   /**
-   * ****************************************************************
-   *                  @dev Get Fixtures by Marketplace Id
-   * ****************************************************************
+   * @dev Get All Fixtures
    */
-   getFixturesByMarketplaceSlugController: expressAsyncHandler(async (req, res) => {
-    const marketplaceSlug = req.query.marketplaceSlug
-    const fixtures = await Fixture.find({ marketplaceSlug: sanitizeQueryInput(marketplaceSlug)});
-    res.status(200).json({ data: fixtures });
-  }),
+  getFixturesController: expressAsyncHandler(async (req, res) =>
+    res.status(200).json({ fixtures: await Fixture.find() })
+  ),
 
   /**
-   * ****************************************************************
-   *                     @dev New Fixture
-   * ****************************************************************
+   * @dev Get Fixtures by Marketplace Slug
+   */
+  getFixturesByMarketplaceSlugController: expressAsyncHandler(
+    async (req, res) =>
+      res.status(200).json({
+        fixtures: await Fixture.find({
+          marketplaceSlug: sanitizeQueryInput(req.params["marketplaceSlug"]),
+        }),
+      })
+  ),
+
+  /**
+   * @dev New Fixture
    */
   newFixtureController: expressAsyncHandler(async (req, res) => {
-    const {
-      marketplaceSlug,
-      MatchNumber,
-      RoundNumber,
-      DateUtc,
-      Location,
-      HomeTeam,
-      AwayTeam,
-      Group,
-      HomeTeamScore,
-      AwayTeamScore,
-    } = req.body;
-
-    const newFixture = new Fixture({
-      marketplaceSlug,
-      MatchNumber,
-      RoundNumber,
-      DateUtc,
-      Location,
-      HomeTeam,
-      AwayTeam,
-      Group,
-      HomeTeamScore: HomeTeamScore || 0,
-      AwayTeamScore: AwayTeamScore || 0,
+    res.status(200).json({
+      message: "New Fixture created successfully!",
+      response: await Fixture.create({
+        marketplaceSlug: req.body.marketplaceSlug,
+        MatchNumber: req.body.MatchNumber,
+        RoundNumber: req.body.RoundNumber,
+        DateUtc: req.body.DateUtc,
+        Location: req.body.Location,
+        HomeTeam: req.body.HomeTeam,
+        AwayTeam: req.body.AwayTeam,
+        Group: req.body.Group,
+        HomeTeamScore: 0,
+        AwayTeamScore: 0,
+      }),
     });
-
-    await newFixture.save();
-
-    res.status(200).json({ message: "New Fixture created successfully!" });
   }),
   /**
-   * ****************************************************************
-   *                     @dev Update Fixture
-   * ****************************************************************
+   * @dev Update Fixture
    */
-  updateFixturesController: async (req, res) => {
-    const { _id } = req.body;
+  updateFixturesController: expressAsyncHandler(async (req, res) => {
+    const query = { _id: req.params["id"] };
 
-    try {
-      const {
-        marketplaceSlug,
-        MatchNumber,
-        RoundNumber,
-        DateUtc,
-        Location,
-        HomeTeam,
-        AwayTeam,
-        Group,
-        HomeTeamScore,
-        AwayTeamScore,
-      } = req.body;
-      const tempFixture = await Fixture.findOne({
-        _id: sanitizeQueryInput(_id),
-      });
+    const tempFixture = await Fixture.findOne(query);
 
-      Fixture.updateOne(
-        { _id: sanitizeQueryInput(_id) },
-        {
-          $set: {
-            marketplaceSlug: marketplaceSlug || tempFixture.marketplaceSlug,
-            MatchNumber: MatchNumber || tempFixture.MatchNumber,
-            RoundNumber: RoundNumber || tempFixture.RoundNumber,
-            DateUtc: DateUtc || tempFixture.DateUtc,
-            Location: Location || tempFixture.Location,
-            HomeTeam: HomeTeam || tempFixture.HomeTeam,
-            AwayTeam: AwayTeam || tempFixture.AwayTeam,
-            Group: Group || tempFixture.Group,
-            HomeTeamScore: HomeTeamScore || tempFixture.HomeTeamScore,
-            AwayTeamScore: AwayTeamScore || tempFixture.AwayTeamScore,
-          },
-        }
-      )
-        .then(() =>
-          res.status(200).json({ message: "Updated Fixture Successfully!" })
-        )
-        .catch((error) => console.error(error));
-    } catch (error) {}
-  },
+    res.status(200).json({
+      message: "Updated Fixture Successfully!",
+      response: await Fixture.updateOne(query, {
+        $set: {
+          marketplaceSlug:
+            req.body.marketplaceSlug || tempFixture.marketplaceSlug,
+          MatchNumber: req.body.MatchNumber || tempFixture.MatchNumber,
+          RoundNumber: req.body.RoundNumber || tempFixture.RoundNumber,
+          DateUtc: req.body.DateUtc || tempFixture.DateUtc,
+          Location: req.body.Location || tempFixture.Location,
+          HomeTeam: req.body.HomeTeam || tempFixture.HomeTeam,
+          AwayTeam: req.body.AwayTeam || tempFixture.AwayTeam,
+          Group: req.body.Group || tempFixture.Group,
+          HomeTeamScore: req.body.HomeTeamScore || tempFixture.HomeTeamScore,
+          AwayTeamScore: req.body.AwayTeamScore || tempFixture.AwayTeamScore,
+        },
+      }),
+    });
+  }),
   /**
-   * ****************************************************************
-   *                     @dev Delete Fixture
-   * ****************************************************************
+   * @dev Delete Fixture
    */
-  deleteFixturesController: (req, res) => {
-    const { _id } = req.body;
-    Fixture.deleteOne({ _id: sanitizeQueryInput(_id) })
-      .then(() =>
-        res.status(200).json({ message: "Deleted Fixture Successfully!" })
-      )
-      .catch((error) => console.error(error));
-  },
+  deleteFixturesController: expressAsyncHandler(async (req, res) =>
+    res.status(200).json({
+      message: "Deleted Fixture Successfully!",
+      response: await Fixture.deleteOne({
+        _id: sanitizeQueryInput(req.params["id"]),
+      }),
+    })
+  ),
 };
