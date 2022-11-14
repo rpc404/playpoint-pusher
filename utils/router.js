@@ -11,7 +11,7 @@ const {
   newFixtureController,
   updateFixturesController,
   deleteFixturesController,
-  getFixturesByMarketplaceSlugController
+  getFixturesByMarketplaceSlugController,
 } = require("../api/controllers/Fixture");
 const {
   getQuestionaireController,
@@ -35,8 +35,8 @@ const APIRouter = require("express").Router();
  *                   Marketplace API Routers
  * ****************************************************************
  */
-APIRouter.get("/marketplace", getMarketplaces);
 APIRouter.get("/marketplace-specific/:marketplaceSlug", getSpecificMarketplace)
+  .get("/marketplace", getMarketplaces)
   .post(
     "/new-marketplace",
     multerUpload.single("marketplaceCoverImage"),
@@ -51,8 +51,8 @@ APIRouter.get("/marketplace-specific/:marketplaceSlug", getSpecificMarketplace)
  * ****************************************************************
  */
 APIRouter.get("/fixture", getFixturesController)
-.get("/fixture-specific", getSpecificFixtureController)
-.get("/fixture-marketplace", getFixturesByMarketplaceSlugController)
+  .get("/fixture-specific", getSpecificFixtureController)
+  .get("/fixture-marketplace", getFixturesByMarketplaceSlugController)
   .post("/new-fixture", newFixtureController)
   .patch("/update-fixture", updateFixturesController)
   .delete("/delete-fixture", deleteFixturesController);
@@ -77,7 +77,7 @@ APIRouter.get("/results", getResultController)
   .patch("/update-result", updateResultController)
   .delete("/delete-result", deleteResultController);
 
-  /**
+/**
  * ****************************************************************
  *                       Active Prediction
  * ****************************************************************
@@ -89,6 +89,6 @@ APIRouter.get("/results", getResultController)
  *                       Admin Status
  * ****************************************************************
  */
-APIRouter.get("/admin-stats", getCountStatus)
+APIRouter.get("/admin-stats", getCountStatus);
 
 module.exports = APIRouter;
