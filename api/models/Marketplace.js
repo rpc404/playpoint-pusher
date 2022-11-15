@@ -27,6 +27,11 @@ const marketplaceSchema = new Schema({
     url: returnType(String, true, "File URL is required!"),
   },
   tags: returnType(Array, true, "Tags are required!"),
+  /**
+   * @note team type is either countries or clubs
+   * used for the logo of the team, need to be divided here
+   */
+  teamType: returnType(String, true, "Team type is required!"),
   created_at: {
     type: Date,
     default: Date.now(),

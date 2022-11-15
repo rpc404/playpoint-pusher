@@ -42,7 +42,7 @@ module.exports = {
    */
   // deepcode ignore NoRateLimitingForExpensiveWebOperation: Rate Limiting already configured on server.js
   newMarketplace: expressAsyncHandler(async (req, res) => {
-    const { marketplaceName, marketplaceSlug, tags } = req.body;
+    const { marketplaceName, marketplaceSlug, tags, teamType } = req.body;
     const { filename } = req.file;
 
     // deepcode ignore PT: Heroku won't expose file system
@@ -67,6 +67,7 @@ module.exports = {
                 },
                 // deepcode ignore HTTPSourceWithUncheckedType: <please specify a reason of ignoring this>
                 tags: tags.split(","),
+                teamType,
               }),
               message: "Marketplace created successfully!",
             });
@@ -84,7 +85,7 @@ module.exports = {
    * @note marketplace coverimage can't be updated => after beta it must be done
    */
   updateMarketplace: expressAsyncHandler(async (req, res) => {
-    const { marketplaceName, tags } = req.body;
+    const { marketplaceName, tags, teamType } = req.body;
 
     const query = {
       marketplaceSlug: sanitizeQueryInput(req.params["marketplaceSlug"]),
@@ -111,6 +112,7 @@ module.exports = {
 
             // deepcode ignore HTTPSourceWithUncheckedType: <please specify a reason of ignoring this>
             tags: tags.split(",") || tempMarketplace.tags,
+            teamType: teamType || tempMarketplace.teamType,
           },
         }),
       });

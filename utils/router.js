@@ -61,10 +61,10 @@ APIRouter.get("/fixture", getFixturesController)
  * @note Questionaires API Routers
  */
 APIRouter.get("/questionaires", getQuestionaireController)
-  .get("/questionaires/:id", getSpecificQuestionaireController)
+  .get("/questionaires/:fixtureId", getSpecificQuestionaireController)
   .post("/new-questionaire", newQuestionaireController)
-  .patch("/update-questionaire/:id", updateQuestionaireController)
-  .delete("/delete-questionaire/:id", deleteQuestionaireController);
+  .patch("/update-questionaire/:questionaireId", updateQuestionaireController)
+  .delete("/delete-questionaire/:questionaireId", deleteQuestionaireController);
 
 /**
  * @note Results API Routers
