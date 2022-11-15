@@ -52,7 +52,7 @@ APIRouter.get("/marketplace-specific/:marketplaceSlug", getSpecificMarketplace)
  */
 APIRouter.get("/fixture", getFixturesController)
   .get("/fixture-specific", getSpecificFixtureController)
-  .get("/fixture-marketplace", getFixturesByMarketplaceSlugController)
+  .get("/fixture-marketplace/:marketplaceSlug", getFixturesByMarketplaceSlugController)
   .post("/new-fixture", newFixtureController)
   .patch("/update-fixture", updateFixturesController)
   .delete("/delete-fixture", deleteFixturesController);
