@@ -8,9 +8,7 @@ module.exports = {
   /**
    * @dev Get Specific Marketplaces
    */
-  getSpecificMarketplace: expressAsyncHandler(async (req, res) => {
-    marketplace
-      ? res
+  getSpecificMarketplace: expressAsyncHandler(async (req, res) => {res
           .json({
             marketplace: await Marketplace.findOne({
               marketplaceSlug: sanitizeQueryInput(
@@ -19,7 +17,6 @@ module.exports = {
             }),
           })
           .status(200)
-      : res.status(404).json({ msg: "Marketplace not found!" });
   }),
 
   /**
@@ -42,6 +39,9 @@ module.exports = {
    */
   // deepcode ignore NoRateLimitingForExpensiveWebOperation: Rate Limiting already configured on server.js
   newMarketplace: expressAsyncHandler(async (req, res) => {
+    /**
+     * @note fallback for marketplace is required
+     */
     const { marketplaceName, marketplaceSlug, tags, teamType } = req.body;
     const { filename } = req.file;
 
