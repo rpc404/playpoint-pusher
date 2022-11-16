@@ -16,10 +16,9 @@ const returnType = (type, require, requiredMessage) => {
   };
 };
 
-const leaderboardSchema = new Schema({
-  fixtureId: returnType(String, true, "Fixture ID is required!"),
-  totalUsers: returnType(Number, true, "Total users is required!"),
-  totalVolume: returnType(Number, true, "Total volume is required!"),
+const predictionSchema = new Schema({
+  questionaireId: returnType(String, true, "Questionaire ID is required!"),
+  answers: returnType(Array, true, "Answers is required!"),
   created_at: {
     type: Date,
     default: Date.now(),
@@ -27,4 +26,4 @@ const leaderboardSchema = new Schema({
   updated_at: Date,
 });
 
-module.exports = Model("leaderboard", leaderboardSchema);
+module.exports = Model("leaderboard", predictionSchema);
