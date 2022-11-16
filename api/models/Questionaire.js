@@ -26,7 +26,10 @@ const questionaireSchema = new Schema({
     true,
     "Questionaire Price is required!"
   ),
-  questionaires: returnType(Array, true, "Questionaires is required!"),
+  questionaires: {
+    questions: returnType(Array, true, "Questionaires is required!"),
+    answers: returnType(Array, true, "Answers is required!"),
+  },
   poolType: returnType(String, true, "Pool Type is required!"),
   created_at: {
     type: Date,

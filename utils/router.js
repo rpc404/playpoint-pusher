@@ -28,12 +28,11 @@ const {
   deleteResultController,
 } = require("../api/controllers/Result");
 const { getCountStatus } = require("../api/helpers/adminStats");
+const { getLeaderboards, createLeaderboard } = require("../api/controllers/Leaderboards");
 
 const APIRouter = require("express").Router();
 
-/**
- * @note Marketplace API Routers
- */
+// @note Marketplace API Endpoints
 APIRouter.get("/marketplace-specific/:marketplaceSlug", getSpecificMarketplace)
   .get("/marketplace", getMarketplaces)
   .post(
@@ -44,9 +43,7 @@ APIRouter.get("/marketplace-specific/:marketplaceSlug", getSpecificMarketplace)
   .patch("/update-marketplace/:marketplaceSlug", updateMarketplace)
   .delete("/delete-marketplace/:marketplaceSlug", deleteMarketplace);
 
-/**
- * @note Fixture API Routers
- */
+// @note Fixture API Endpoints
 APIRouter.get("/fixture", getFixturesController)
   .get("/fixture-specific/:id", getSpecificFixtureController)
   .get(
@@ -57,31 +54,29 @@ APIRouter.get("/fixture", getFixturesController)
   .patch("/update-fixture/:id", updateFixturesController)
   .delete("/delete-fixture/:id", deleteFixturesController);
 
-/**
- * @note Questionaires API Routers
- */
+// @note Questionaires API Endpoints
 APIRouter.get("/questionaires", getQuestionaireController)
   .get("/questionaires/:fixtureId", getSpecificQuestionaireController)
   .post("/new-questionaire", newQuestionaireController)
   .patch("/update-questionaire/:questionaireId", updateQuestionaireController)
   .delete("/delete-questionaire/:questionaireId", deleteQuestionaireController);
 
-/**
- * @note Results API Routers
- */
+// @note Results API Endpoints
 APIRouter.get("/results", getResultController)
   .post("/new-result", newResultController)
   .patch("/update-result", updateResultController)
   .delete("/delete-result", deleteResultController);
 
-/**
- * @note Active Prediction
- */
+// @note Leaderboards API Endpoints
+APIRouter.get("/leaderboards", getLeaderboards)
+.post("/leaderboards", createLeaderboard)
+.patch("/leaderboards/:leaderboardId")
+.delete("/leaderboards/:leaderboardId")
+
+// @note Active Prediction
 // APIRouter.get("/active-prediction")
 
-/**
- * @note Admin Status
- */
+// @note Admin Status
 APIRouter.get("/admin-stats", getCountStatus);
 
 module.exports = APIRouter;
