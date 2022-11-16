@@ -4,9 +4,11 @@ const Questionaire = require("../models/Questionaire");
 
 module.exports = {
   getSpecificQuestionaireController: expressAsyncHandler(async (req, res) => {
-    res
-      .status(200)
-      .json({ questionaire: await Questionaire.findById(req.params["id"]) });
+    res.status(200).json({
+      questionaire: await Questionaire.find({
+        fixtureId: sanitizeQueryInput(req.params["fixtureId"]),
+      }),
+    });
   }),
   /**
    * @dev Get All Questionaires
@@ -27,44 +29,37 @@ module.exports = {
    * @dev Update Questionaire
    */
   updateQuestionaireController: expressAsyncHandler(async (req, res) => {
-    const { _id } = req.body;
+    const query = {
+      _id: sanitizeQueryInput(req.params["questionaireId"]),
+    };
 
-    const {
-      fixtureId,
-      questionaireType,
-      questionairePrice,
-      questionaires,
-      poolType,
-    } = req.body;
+    const tempQuestionaire = Questionaire.findOne(query);
 
-    const tempQuestionaire = Questionaire.findOne({
-      _id: sanitizeQueryInput(_id),
-    });
-
-    await Questionaire.updateOne(
-      { _id: sanitizeQueryInput(_id) },
-      {
+    res.status(200).json({
+      message: "Questionaire updated successfully!",
+      response: await Questionaire.updateOne(query, {
         $set: {
-          fixtureId: fixtureId || tempQuestionaire.fixtureId,
+          fixtureId: req.body.fixtureId || tempQuestionaire.fixtureId,
           questionaireType:
-            questionaireType || tempQuestionaire.questionaireType,
+            req.body.questionaireType || tempQuestionaire.questionaireType,
           questionairePrice:
-            questionairePrice || tempQuestionaire.questionairePrice,
-          questionaires: questionaires || tempQuestionaire.questionaires,
-          poolType: poolType || tempQuestionaire.poolType,
+            req.body.questionairePrice || tempQuestionaire.questionairePrice,
+          questionaires:
+            req.body.questionaires || tempQuestionaire.questionaires,
+          poolType: req.body.poolType || tempQuestionaire.poolType,
         },
-      }
-    );
-
-    res.status(200).json({ message: "Questionaire updated successfully!" });
+      }),
+    });
   }),
   /**
    * @dev Delete Questionaire
    */
   deleteQuestionaireController: expressAsyncHandler(async (req, res) => {
-    const { _id } = req.body;
-
-    await Questionaire.deleteOne({ _id: sanitizeQueryInput(_id) });
-    res.status(200).json({ message: "Questionaire deleted successfully!" });
+    res.status(200).json({
+      message: "Questionaire deleted successfully!",
+      response: await Questionaire.deleteOne({
+        _id: sanitizeQueryInput(req.params["questionaireId"]),
+      }),
+    });
   }),
 };
