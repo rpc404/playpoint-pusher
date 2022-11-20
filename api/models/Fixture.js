@@ -17,6 +17,7 @@ const returnType = (type, require, requiredMessage) => {
 };
 
 const fixtureSchema = new Schema({
+  closed: returnType(Boolean, true, "Closed is required!"),
   marketplaceSlug: returnType(String, true, "Marketplace Slug is required!"),
   MatchNumber: {
     ...returnType(Number, true, "Match number is required!"),
