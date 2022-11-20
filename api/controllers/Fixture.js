@@ -60,25 +60,28 @@ module.exports = {
     const query = { _id: req.params["id"] };
 
     const tempFixture = await Fixture.findOne(query);
+    console.log(req.body);
 
-    res.status(200).json({
-      message: "Updated Fixture Successfully!",
-      response: await Fixture.updateOne(query, {
-        $set: {
-          marketplaceSlug:
-            req.body.marketplaceSlug || tempFixture.marketplaceSlug,
-          MatchNumber: req.body.MatchNumber || tempFixture.MatchNumber,
-          RoundNumber: req.body.RoundNumber || tempFixture.RoundNumber,
-          DateUtc: req.body.DateUtc || tempFixture.DateUtc,
-          Location: req.body.Location || tempFixture.Location,
-          HomeTeam: req.body.HomeTeam || tempFixture.HomeTeam,
-          AwayTeam: req.body.AwayTeam || tempFixture.AwayTeam,
-          Group: req.body.Group || tempFixture.Group,
-          HomeTeamScore: req.body.HomeTeamScore || tempFixture.HomeTeamScore,
-          AwayTeamScore: req.body.AwayTeamScore || tempFixture.AwayTeamScore,
-        },
-      }),
-    });
+    tempFixture &&
+      res.status(200).json({
+        message: "Updated Fixture Successfully!",
+        response: await Fixture.updateOne(query, {
+          $set: {
+            marketplaceSlug:
+              req.body.marketplaceSlug || tempFixture.marketplaceSlug,
+            MatchNumber: req.body.MatchNumber || tempFixture.MatchNumber,
+            RoundNumber: req.body.RoundNumber || tempFixture.RoundNumber,
+            DateUtc: req.body.DateUtc || tempFixture.DateUtc,
+            Location: req.body.Location || tempFixture.Location,
+            HomeTeam: req.body.HomeTeam || tempFixture.HomeTeam,
+            AwayTeam: req.body.AwayTeam || tempFixture.AwayTeam,
+            Group: req.body.Group || tempFixture.Group,
+            HomeTeamScore: req.body.HomeTeamScore || tempFixture.HomeTeamScore,
+            AwayTeamScore: req.body.AwayTeamScore || tempFixture.AwayTeamScore,
+            closed: req.body.closed || tempFixture.closed,
+          },
+        }),
+      });
   }),
   /**
    * @dev Delete Fixture
