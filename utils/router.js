@@ -28,7 +28,7 @@ const {
   deleteResultController,
 } = require("../api/controllers/Result");
 const { getCountStatus } = require("../api/helpers/adminStats");
-const { getLeaderboards, createLeaderboard } = require("../api/controllers/Leaderboards");
+const { getLeaderboards, createLeaderboard, updateLeaderboard, deleteLeaderboard } = require("../api/controllers/Leaderboards");
 const { setPrediction, getPredictions } = require("../api/controllers/Prediction");
 
 const APIRouter = require("express").Router();
@@ -71,8 +71,8 @@ APIRouter.get("/results", getResultController)
 // @note Leaderboards API Endpoints
 APIRouter.get("/leaderboards", getLeaderboards)
 .post("/leaderboards", createLeaderboard)
-.patch("/leaderboards/:leaderboardId")
-.delete("/leaderboards/:leaderboardId")
+.patch("/leaderboards/:leaderboardId", updateLeaderboard)
+.delete("/leaderboards/:leaderboardId", deleteLeaderboard)
 
 // @note Active Prediction
 APIRouter.post("/prediction", setPrediction).get("/prediction", getPredictions);

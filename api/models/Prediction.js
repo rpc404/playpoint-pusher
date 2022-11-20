@@ -17,6 +17,7 @@ const returnType = (type, require, requiredMessage) => {
 };
 
 const predictionSchema = new Schema({
+  predictionType: returnType(String, true, "Prediction Type is required!"),
   questionaireId: returnType(String, true, "Questionaire ID is required!"),
   predictedBy: returnType(String, true, "Predicted By is required!"),
   amount: returnType(Number, true, "Amount is required!"),
