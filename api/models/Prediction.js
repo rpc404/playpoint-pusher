@@ -18,7 +18,9 @@ const returnType = (type, require, requiredMessage) => {
 
 const predictionSchema = new Schema({
   questionaireId: returnType(String, true, "Questionaire ID is required!"),
-  answers: returnType(Array, true, "Answers is required!"),
+  predictedBy: returnType(String, true, "Predicted By is required!"),
+  amount: returnType(Number, true, "Amount is required!"),
+  answers: returnType(Object, true, "Answers is required!"),
   created_at: {
     type: Date,
     default: Date.now(),
@@ -26,4 +28,4 @@ const predictionSchema = new Schema({
   updated_at: Date,
 });
 
-module.exports = Model("leaderboard", predictionSchema);
+module.exports = Model("prediction", predictionSchema);

@@ -8,15 +8,14 @@ module.exports = {
   /**
    * @dev Get Specific Marketplaces
    */
-  getSpecificMarketplace: expressAsyncHandler(async (req, res) => {res
-          .json({
-            marketplace: await Marketplace.findOne({
-              marketplaceSlug: sanitizeQueryInput(
-                req.params["marketplaceSlug"]
-              ),
-            }),
-          })
-          .status(200)
+  getSpecificMarketplace: expressAsyncHandler(async (req, res) => {
+    res
+      .json({
+        marketplace: await Marketplace.findOne({
+          marketplaceSlug: sanitizeQueryInput(req.params["marketplaceSlug"]),
+        }),
+      })
+      .status(200);
   }),
 
   /**
