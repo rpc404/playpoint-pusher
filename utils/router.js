@@ -29,7 +29,7 @@ const {
 } = require("../api/controllers/Result");
 const { getCountStatus } = require("../api/helpers/adminStats");
 const { getLeaderboards, createLeaderboard } = require("../api/controllers/Leaderboards");
-const { setPrediction } = require("../api/controllers/Prediction");
+const { setPrediction, getPredictions } = require("../api/controllers/Prediction");
 
 const APIRouter = require("express").Router();
 
@@ -75,7 +75,7 @@ APIRouter.get("/leaderboards", getLeaderboards)
 .delete("/leaderboards/:leaderboardId")
 
 // @note Active Prediction
-APIRouter.post("/prediction", setPrediction)
+APIRouter.post("/prediction", setPrediction).get("/prediction", getPredictions);
 
 // @note Admin Status
 APIRouter.get("/admin-stats", getCountStatus);
