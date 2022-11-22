@@ -8,24 +8,26 @@ module.exports = {
    */
   setProfile: expressAsyncHandler(async (req, res) => {
     let profile = await Profile.findOne({walletID:req.body.userPublicAddress})
+    if(req.body.username && profile){
+        profile.username = req.body.username
+        await profile.save();
+    }
     if(profile.username===""){
         let username;
-        await fetch("https://randomuser.me/api/").then(res=>res.json()).then(res=>{
-            username = res.results[0].name.first;
+        await fetch("https://api.namefake.com/").then(res=>res.json()).then(res=>{
+            username = res.username;
         })
-        console.log("suername",username);
         profile.username = username;
         await profile.save();  
         profile = await Profile.findOne({walletID:req.body.userPublicAddress})
     }
     if(!profile){
-        let username = "";
-        fetch("https://randomuser.me/api/").then(res=>res.json()).then(res=>{
-            username = res.results[0].name;
+        let username;
+        fetch("https://api.namefake.com/").then(res=>res.json()).then(res=>{
+            username = res.username;
         })
         profile = await Profile.create({walletID:req.body.userPublicAddress,username:username})
     }
-    console.log(profile)
     res.status(200).send({profile: profile});
   })
 
