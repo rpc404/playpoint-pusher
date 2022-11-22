@@ -35,9 +35,9 @@ module.exports = {
       : await Prediction.find();
     
     data.forEach(async d=>{
-      await Profile.find({walletID:d.predictedBy}).then(profile=>{
+      await Profile.findOne({walletID:d.predictedBy}).then(profile=>{
+        console.log(profile)
         d.username = profile.username
-        console.log(d)
         _.push(d)
       })
       return _;
