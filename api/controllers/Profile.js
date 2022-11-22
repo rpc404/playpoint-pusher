@@ -13,13 +13,15 @@ module.exports = {
         fetch("https://randomuser.me/api/").then(res=>res.json()).then(res=>{
             username = res.results[0].name;
         })
-        await profile.updateOne({username:username},{new:false})  
+        console.log("suername",username);
+        profile.username = username;
+        await profile.save();  
         profile = await Profile.findOne({walletID:req.body.userPublicAddress})
     }
     if(!profile){
         let username = "";
         fetch("https://randomuser.me/api/").then(res=>res.json()).then(res=>{
-            username = res.results[0].name.first;
+            username = res.results[0].name;
         })
         profile = await Profile.create({walletID:req.body.userPublicAddress,username:username})
     }
