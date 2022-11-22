@@ -13,7 +13,7 @@ module.exports = {
   getPredictions: expressAsyncHandler(async (req, res) => {
     const userid = req.query.userid || "";
     const fixtureid = req.query.fixtureid || "";
-    const data = userid
+    let data = userid
       ? await Prediction.find({ predictedBy: userid })
       : fixtureid
       ? await Prediction.aggregate([
