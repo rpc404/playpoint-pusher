@@ -31,6 +31,7 @@ const { getCountStatus } = require("../api/helpers/adminStats");
 const { getLeaderboards, createLeaderboard, updateLeaderboard, deleteLeaderboard } = require("../api/controllers/Leaderboards");
 const { setPrediction, getPredictions } = require("../api/controllers/Prediction");
 const {marketplaceStats} = require("../api/helpers/marketplaceStats");
+const { setProfile } = require("../api/controllers/Profile");
 
 const APIRouter = require("express").Router();
 
@@ -78,7 +79,9 @@ APIRouter.get("/leaderboards", getLeaderboards)
 // @note Active Prediction
 APIRouter.post("/prediction", setPrediction).get("/prediction", getPredictions);
 
-// @note Admin Status
+// @note Profile
 APIRouter.get("/admin-stats", getCountStatus).get("/marketplace-stats/:marketplaceSlug", marketplaceStats)
+
+APIRouter.post("/profile", setProfile)
 
 module.exports = APIRouter;
