@@ -21,10 +21,18 @@ module.exports = {
   /**
    * @dev Get All Marketplaces
    */
-  getMarketplaces: expressAsyncHandler(async (req, res) =>
-    res.status(200).json({
-      marketplaces: await Marketplace.find(),
+  getMarketplaces: expressAsyncHandler(async (req, res) =>{
+    const allMarketplace = await Marketplace.find();
+    let fixturesCount = 0;
+    allMarketplace.map(async (_marketplace)=>{
+      fixturesCount += await Fixtures.find({marketplaceSlug:_marketplace.marketplaceSlug}).count()
     })
+    allMarketplace._fixtureCount = fixturesCount;
+      res.status(200).json({
+        marketplaces: allMarketplace,
+      })
+  }
+
   ),
 
   /**
