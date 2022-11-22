@@ -16,7 +16,7 @@ module.exports = {
     const data = userid
       ? await Prediction.find({ predictedBy: userid })
       : fixtureid
-      ? await Prediction.find().aggregate([
+      ? await Prediction.aggregate([
           {
             $lookup: {
               from: "profile",
