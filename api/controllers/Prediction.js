@@ -24,18 +24,16 @@ module.exports = {
           }
         ])
       : await Prediction.find();
-
-      const _ = [];
     
-    await(data.forEach(async d=>{
+    data = data.forEach(async d=>{
       d.username = await Profile.findOne({walletID:d.predictedBy})
-      _.push(d)
-    }))();
-    console.log(_);
+      return d;
+    });
+    console.log(data);
     res.status(200).json({
       status: "success",
       message: "Predictions fetched successfully!",
-      data: _,
+      data: data,
     });
   }),
 };
