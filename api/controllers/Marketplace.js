@@ -26,12 +26,12 @@ module.exports = {
     const allMarketplace = await Marketplace.find();
     const _data =  allMarketplace.map(async (_marketplace)=>{
         // fixturesCount += await Fixures.find({marketplaceSlug:_marketplace.marketplaceSlug}).count()
-        _marketplace.fixtures = await Fixures.find({marketplaceSlug:_marketplace.marketplaceSlug}).countDocuments({})
+        // _marketplace.fixtures = await Fixures.find({marketplaceSlug:_marketplace.marketplaceSlug}).countDocuments({})
         return _marketplace;
       })
     
       res.status(200).json({
-        marketplaces: _data,
+        marketplaces: allMarketplace,
       })
   }
 
