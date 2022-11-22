@@ -38,7 +38,7 @@ module.exports = {
     res.status(200).json({
       status: "success",
       message: "Predictions fetched successfully!",
-      data: _,
+      data: data,
     });
   }),
 };
