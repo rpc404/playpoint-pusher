@@ -12,7 +12,7 @@ module.exports = {
         let username = "";
         fetch("https://randomuser.me/api/").then(res=>res.json()).then(res=>{
             console.log(res)
-            username = res.result[0].name.first;
+            username = res.results[0].name.first;
         })
         profile = await profile.update({username:username},{new:false})  
     }
@@ -20,7 +20,7 @@ module.exports = {
         let username = "";
         fetch("https://randomuser.me/api/").then(res=>res.json()).then(res=>{
             console.log(res)
-            username = res.result[0].name.first;
+            username = res.results[0].name.first;
         })
         profile = await Profile.create({walletID:req.body.userPublicAddress,username:username})
     }
