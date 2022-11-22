@@ -27,10 +27,10 @@ module.exports = {
 
       const _ = [];
     
-    data.forEach(async d=>{
+    await(data.forEach(async d=>{
       d.username = await Profile.findOne({walletID:d.predictedBy})
       _.push(d)
-    })
+    }))();
     console.log(_);
     res.status(200).json({
       status: "success",
