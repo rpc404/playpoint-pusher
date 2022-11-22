@@ -11,7 +11,7 @@ module.exports = {
     const totalQuestionaires = await Questionaire.find(query).count();
     const totalPredictions = await Prediction.find(query).count();
 
-    res.status.json({
+    res.status(200).json({
       response: {
         totalFixtures,
         totalQuestionaires,
