@@ -34,9 +34,12 @@ module.exports = {
         ])
       : await Prediction.find();
     
-     data.map(async d=>{
-      d.user = await Profile.find({walletID:d.predictedBy})
-      _.push(d)
+    data.map(async d=>{
+      await Profile.find({walletID:d.predictedBy}).then(profile=>{
+        d.username = profile.username
+        _.push(d)
+      })
+      return _;
     })
     res.status(200).json({
       status: "success",
