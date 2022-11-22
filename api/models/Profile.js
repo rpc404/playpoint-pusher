@@ -21,4 +21,4 @@ const predictionSchema = new Schema({
   username: returnType(String, false, "Prediction Type is required!"),
 });
 
-module.exports = Model("prediction", predictionSchema);
+module.exports = Model("profile", predictionSchema);
