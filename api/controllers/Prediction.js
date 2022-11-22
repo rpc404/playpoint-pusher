@@ -25,8 +25,9 @@ module.exports = {
         ])
       : await Prediction.find();
     
-    const _data = data.map(async d=>{
-      d.username = await Profile.findOne({walletID:d.predictedBy})
+    const _data =  data.map(  d=>{
+      d.username =  Profile.findOne({walletID:d.predictedBy}).get("username")
+      console.log(d)
       return d;
     });
     console.log(_data);
