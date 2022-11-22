@@ -1,6 +1,7 @@
 var fs = require("fs");
 const expressAsyncHandler = require("express-async-handler");
 const Marketplace = require("../models/Marketplace");
+const Fixures = require("../models/Fixture");
 const { imageKit } = require("../../utils/ImageKit");
 const { sanitizeQueryInput } = require("../../utils/QuerySanitizer");
 
