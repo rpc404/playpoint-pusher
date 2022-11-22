@@ -14,7 +14,8 @@ module.exports = {
             console.log(res)
             username = res.results[0].name.first;
         })
-        profile = await profile.update({username:username},{new:false})  
+        await profile.update({username:username},{new:false})  
+        profile = await Profile.findOne({walletID:req.body.userPublicAddress})
     }
     if(!profile){
         let username = "";
