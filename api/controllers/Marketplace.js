@@ -1,6 +1,7 @@
 var fs = require("fs");
 const expressAsyncHandler = require("express-async-handler");
 const Marketplace = require("../models/Marketplace");
+const Fixures = require("../models/Fixture");
 const { imageKit } = require("../../utils/ImageKit");
 const { sanitizeQueryInput } = require("../../utils/QuerySanitizer");
 
@@ -23,11 +24,11 @@ module.exports = {
    */
   getMarketplaces: expressAsyncHandler(async (req, res) =>{
     const allMarketplace = await Marketplace.find();
-  //   let fixturesCount = 0;
-  //  allMarketplace.length > 0 && allMarketplace.map(async (_marketplace)=>{
-  //     fixturesCount += await Fixures.find({marketplaceSlug:_marketplace.marketplaceSlug}).count()
-  //     return fixturesCount;
-  //   })
+    const _data =  allMarketplace.map(async (_marketplace)=>{
+        // fixturesCount += await Fixures.find({marketplaceSlug:_marketplace.marketplaceSlug}).count()
+        // _marketplace.fixtures = await Fixures.find({marketplaceSlug:_marketplace.marketplaceSlug}).countDocuments({})
+        return _marketplace;
+      })
     
       res.status(200).json({
         marketplaces: allMarketplace,
