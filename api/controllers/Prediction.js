@@ -12,7 +12,7 @@ module.exports = {
     getPredictions: expressAsyncHandler(async (req, res) => {
         const userid = req.query.userid || "";
         const fixtureid = req.query.fixtureid || "";
-        const data = userid ? await Prediction.find({predictedBy:userid,fixtureId:fixtureid}) : await Prediction.find({fixtureId:fixtureid})
+        const data = userid ? await Prediction.find({predictedBy:userid}) : fixtureid ? await Prediction.find({fixtureId:fixtureid}) : await Prediction.find() 
         res.status(200).json({
             status: "success",
             message: "Predictions fetched successfully!",
