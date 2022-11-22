@@ -23,12 +23,12 @@ module.exports = {
    */
   getMarketplaces: expressAsyncHandler(async (req, res) =>{
     const allMarketplace = await Marketplace.find();
-    let fixturesCount = 0;
-   allMarketplace.length > 0 && allMarketplace.map(async (_marketplace)=>{
-      fixturesCount += await Fixtures.find({marketplaceSlug:_marketplace.marketplaceSlug}).count()
-      return fixturesCount;
-    })
-    allMarketplace._fixtureCount = fixturesCount;
+  //   let fixturesCount = 0;
+  //  allMarketplace.length > 0 && allMarketplace.map(async (_marketplace)=>{
+  //     fixturesCount += await Fixures.find({marketplaceSlug:_marketplace.marketplaceSlug}).count()
+  //     return fixturesCount;
+  //   })
+    
       res.status(200).json({
         marketplaces: allMarketplace,
       })
