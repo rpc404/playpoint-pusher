@@ -13,7 +13,7 @@ module.exports = {
   getPredictions: expressAsyncHandler(async (req, res) => {
     const userid = req.query.userid || "";
     const fixtureid = req.query.fixtureid || "";
-    const data = userid
+    let data = userid
       ? await Prediction.find({ predictedBy: userid })
       : fixtureid
       ? await Prediction.aggregate([
@@ -25,10 +25,10 @@ module.exports = {
         ])
       : await Prediction.find();
     
-    const _data = await(async()=>data.map(async(d)=>{
+    const _data =  data.map( async d=>{
       d.username = await Profile.findOne({walletID:d.predictedBy})
       return d;
-    }))();
+    });
     console.log(_data);
     res.status(200).json({
       status: "success",
