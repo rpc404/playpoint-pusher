@@ -13,10 +13,19 @@ module.exports = {
   getPredictions: expressAsyncHandler(async (req, res) => {
     const userid = req.query.userid || "";
     const fixtureid = req.query.fixtureid || "";
-    let data = userid
+    let _ = [];
+    const data = userid
       ? await Prediction.find({ predictedBy: userid })
       : fixtureid
       ? await Prediction.aggregate([
+          {
+            $lookup: {
+              from: "profile",
+              localField: "predictedBy",
+              foreignField: "walletID",
+              as: "predict_user",
+            },
+          },
           {
             $match:{
                  'fixtureId': fixtureid 
@@ -25,16 +34,15 @@ module.exports = {
         ])
       : await Prediction.find();
     
-    const _data =  data.map( async d=>{
-      username = await Profile.findOne({walletID:d.predictedBy})
-      console.log(username)
-      return d;
-    });
-    console.log(_data);
+    data.forEach(async d=>{
+      d.username = await Profile.findOne({walletID:d.predictedBy})
+      console.log(d)
+      _.push(d)
+    })
     res.status(200).json({
       status: "success",
       message: "Predictions fetched successfully!",
-      data: data,
+      data: _,
     });
   }),
 };
