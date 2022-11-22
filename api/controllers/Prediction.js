@@ -25,11 +25,11 @@ module.exports = {
         ])
       : await Prediction.find();
     
-    data.map(async d=>{
+    const _data = data.map(async d=>{
       d.username = await Profile.findOne({walletID:d.predictedBy})
       return d;
     });
-    console.log(data);
+    console.log(_data);
     res.status(200).json({
       status: "success",
       message: "Predictions fetched successfully!",
