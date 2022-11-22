@@ -33,8 +33,8 @@ module.exports = {
         ])
       : await Prediction.find();
     data = data.map(async d=>{
-      d.user = await Profile.find({walletID:d.predictedBy})
-      return d;
+      const user = await Profile.find({walletID:d.predictedBy})
+      return {...d,user:user};
     })
     res.status(200).json({
       status: "success",
