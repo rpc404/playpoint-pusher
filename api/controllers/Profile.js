@@ -11,7 +11,7 @@ module.exports = {
     if(!profile){
         let username = "";
         fetch("https://randomuser.me/api/").then(res=>res.json()).then(res=>{
-            username = res.name.first;
+            username = res.result[0].name.first;
         })
         profile = await Profile.create({walletID:req.body.userPublicAddress,username:username})
     }
