@@ -1,14 +1,22 @@
 const expressAsyncHandler = require("express-async-handler");
 const Fixture = require("../models/Fixture");
+const Prediction = require("../models/Prediction");
+const Questionaire = require("../models/Questionaire");
 
 module.exports = {
   marketplaceStats: expressAsyncHandler(async (req, res) => {
-    const fixtures = await Fixture.find({
-      marketplaceSlug: req.params.marketplaceSlug,
-    });
+    const query = { marketplaceSlug: req.params["marketplaceSlug"] };
 
-    for(f in fixtures){
-        console.log(fixtures)
-    }
+    const totalFixtures = await Fixture.find(query).count();
+    const totalQuestionaires = await Questionaire.find(query).count();
+    const totalPredictions = await Prediction.find(query).count();
+
+    res.status(200).json({
+      response: {
+        totalFixtures,
+        totalQuestionaires,
+        totalPredictions,
+      },
+    });
   }),
 };
