@@ -9,9 +9,9 @@ module.exports = {
   setProfile: expressAsyncHandler(async (req, res) => {
     let profile = await Profile.findOne({walletID:req.body.userPublicAddress})
     if(profile.username===""){
-        let username = "";
-        fetch("https://randomuser.me/api/").then(res=>res.json()).then(res=>{
-            username = res.results[0].name;
+        let username;
+        await fetch("https://randomuser.me/api/").then(res=>res.json()).then(res=>{
+            username = res.results[0].name.first;
         })
         console.log("suername",username);
         profile.username = username;
