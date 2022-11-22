@@ -15,6 +15,7 @@ module.exports = {
         })
         profile = await Profile.create({walletID:req.body.userPublicAddress,username:username})
     }
+    console.log(profile)
     res.status(200).send({profile: profile});
   })
 
