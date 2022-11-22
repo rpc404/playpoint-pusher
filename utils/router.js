@@ -72,15 +72,19 @@ APIRouter.get("/results", getResultController)
 
 // @note Leaderboards API Endpoints
 APIRouter.get("/leaderboards", getLeaderboards)
-.post("/leaderboards", createLeaderboard)
-.patch("/leaderboards/:leaderboardId", updateLeaderboard)
-.delete("/leaderboards/:leaderboardId", deleteLeaderboard)
+  .post("/leaderboards", createLeaderboard)
+  .patch("/leaderboards/:leaderboardId", updateLeaderboard)
+  .delete("/leaderboards/:leaderboardId", deleteLeaderboard);
 
 // @note Active Prediction
 APIRouter.post("/prediction", setPrediction).get("/prediction", getPredictions);
 
-// @note Profile
-APIRouter.get("/admin-stats", getCountStatus).get("/marketplace-stats/:marketplaceSlug", marketplaceStats)
+
+// @note Admin Status
+APIRouter.get("/admin-stats", getCountStatus).get(
+  "/marketplace-stats/:marketplaceSlug",
+  marketplaceStats
+);
 
 APIRouter.post("/profile", setProfile)
 
