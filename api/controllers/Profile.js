@@ -7,7 +7,7 @@ module.exports = {
    * @dev Get Specific Marketplaces
    */
   setProfile: expressAsyncHandler(async (req, res) => {
-    let profile = await Profile.find({walletID:req.body.userPublicAddress})
+    let profile = await Profile.findOne({walletID:req.body.userPublicAddress})
     if(!profile){
         let username = "";
         fetch("https://randomuser.me/api/").then(res=>res.json()).then(res=>{
@@ -15,7 +15,7 @@ module.exports = {
         })
         profile = await Profile.create({walletID:req.body.userPublicAddress,username:username})
     }
-    res.status(200).send(profile);
+    res.status(200).send({profile: profile});
   })
 
 }
