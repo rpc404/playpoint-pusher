@@ -79,7 +79,6 @@ APIRouter.get("/leaderboards", getLeaderboards)
 // @note Active Prediction
 APIRouter.post("/prediction", setPrediction).get("/prediction", getPredictions);
 
-// @note Profile
 APIRouter.get("/admin-stats", getCountStatus).get("/marketplace-stats/:marketplaceSlug", marketplaceStats)
 
 APIRouter.post("/profile", setProfile)
