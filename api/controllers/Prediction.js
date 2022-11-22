@@ -19,14 +19,6 @@ module.exports = {
       : fixtureid
       ? await Prediction.aggregate([
           {
-            $lookup: {
-              from: "profile",
-              localField: "predictedBy",
-              foreignField: "walletID",
-              as: "predict_user",
-            },
-          },
-          {
             $match:{
                  'fixtureId': fixtureid 
             }
@@ -35,12 +27,9 @@ module.exports = {
       : await Prediction.find();
     
     data.forEach(async d=>{
-      await Profile.findOne({walletID:d.predictedBy}).then(profile=>{
-        console.log(profile)
-        d.username = profile.username
-        _.push(d)
-      })
-      return _;
+      d.username = await Profile.findOne({walletID:d.predictedBy})
+      console.log(d)
+      _.push(d)
     })
     res.status(200).json({
       status: "success",
