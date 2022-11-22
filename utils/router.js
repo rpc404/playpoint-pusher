@@ -28,9 +28,17 @@ const {
   deleteResultController,
 } = require("../api/controllers/Result");
 const { getCountStatus } = require("../api/helpers/adminStats");
-const { getLeaderboards, createLeaderboard, updateLeaderboard, deleteLeaderboard } = require("../api/controllers/Leaderboards");
-const { setPrediction, getPredictions } = require("../api/controllers/Prediction");
-const {marketplaceStats} = require("../api/helpers/marketplaceStats");
+const {
+  getLeaderboards,
+  createLeaderboard,
+  updateLeaderboard,
+  deleteLeaderboard,
+} = require("../api/controllers/Leaderboards");
+const {
+  setPrediction,
+  getPredictions,
+} = require("../api/controllers/Prediction");
+const { marketplaceStats } = require("../api/helpers/marketplaceStats");
 
 const APIRouter = require("express").Router();
 
@@ -71,14 +79,17 @@ APIRouter.get("/results", getResultController)
 
 // @note Leaderboards API Endpoints
 APIRouter.get("/leaderboards", getLeaderboards)
-.post("/leaderboards", createLeaderboard)
-.patch("/leaderboards/:leaderboardId", updateLeaderboard)
-.delete("/leaderboards/:leaderboardId", deleteLeaderboard)
+  .post("/leaderboards", createLeaderboard)
+  .patch("/leaderboards/:leaderboardId", updateLeaderboard)
+  .delete("/leaderboards/:leaderboardId", deleteLeaderboard);
 
 // @note Active Prediction
 APIRouter.post("/prediction", setPrediction).get("/prediction", getPredictions);
 
 // @note Admin Status
-APIRouter.get("/admin-stats", getCountStatus).get("/marketplace-stats/:marketplaceSlug", marketplaceStats)
+APIRouter.get("/admin-stats", getCountStatus).get(
+  "/marketplace-stats/:marketplaceSlug",
+  marketplaceStats
+);
 
 module.exports = APIRouter;
