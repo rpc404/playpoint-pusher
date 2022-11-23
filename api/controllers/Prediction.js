@@ -2,14 +2,17 @@ const expressAsyncHandler = require("express-async-handler");
 const Prediction = require("../models/Prediction");
 const Profile = require("../models/Profile");
 
+var __data = [];
 const getAll = async(data) =>{
-  let __data = [];
   index = 0;
   await data.forEach(async element => {
     element.username = await Profile.findOne({walletID:element.predictedBy})
     __data[index] = element;
     index++;
+    return __data;
   });
+
+  console.log("allData",__data);
   return __data;
 }
 module.exports = {
@@ -42,7 +45,9 @@ module.exports = {
           }
         ])
       : await Prediction.find();
-    await getAll(data).then(res=>console.log(res))
+
+    await getAll(data)
+
     res.status(200).json({
       status: "success",
       message: "Predictions fetched successfully!",
