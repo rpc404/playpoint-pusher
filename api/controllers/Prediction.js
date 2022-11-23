@@ -1,11 +1,11 @@
 const expressAsyncHandler = require("express-async-handler");
 const Prediction = require("../models/Prediction");
-const Profile = require("../models/Profile");
-
+const socket = require("../../utils/socket")
 
 module.exports = {
   setPrediction: expressAsyncHandler(async (req, res) => {
     await Prediction.create(req.body.data);
+    socket.default.trigger("fixture-channel","new-prediction",{data:req.body.data})
     res.status(200).json({
       status: "success",
       message: "Prediction created successfully!",
