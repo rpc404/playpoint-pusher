@@ -42,8 +42,7 @@ module.exports = {
           }
         ])
       : await Prediction.find();
-      const newData = await getAll(data)
-    console.log(newData);
+    await getAll(data).then(res=>console.log(res))
     res.status(200).json({
       status: "success",
       message: "Predictions fetched successfully!",
