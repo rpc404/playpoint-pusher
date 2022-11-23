@@ -16,7 +16,7 @@ module.exports = {
       },
       {
         $match:{
-             'fixtureId': _prediction.fixtureId 
+             '_id': _prediction._id 
         }
       }
     ]).exec()
