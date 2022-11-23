@@ -2,16 +2,16 @@ const expressAsyncHandler = require("express-async-handler");
 const Prediction = require("../models/Prediction");
 const Profile = require("../models/Profile");
 
-var __data = [];
+
 const getAll = async(data) =>{
   index = 0;
-  __data = await data.forEach(async element => {
+  const _data = await data.forEach(async element => {
     element.username = await Profile.findOne({walletID:element.predictedBy})
     return element;
   });
 
-  console.log("allData", __data);
-  return __data;
+  console.log("allData", _data);
+  return _data;
 }
 module.exports = {
   setPrediction: expressAsyncHandler(async (req, res) => {
