@@ -1,5 +1,5 @@
 const Pusher = require('pusher');
-const pusher = new Pusher({
+const socket = new Pusher({
   appId: "1202226",
   key: "2142cda6d39765cba2a9",
   secret: "93c2b88777c4c5d29975",
