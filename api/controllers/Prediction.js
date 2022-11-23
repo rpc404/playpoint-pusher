@@ -4,9 +4,23 @@ const socket = require("../../utils/socket")
 
 module.exports = {
   setPrediction: expressAsyncHandler(async (req, res) => {
-    await Prediction.create(req.body.data);
-  
-    socket.trigger("prediction-channel","new-prediction",{data:req.body.data})
+    let _prediction = await Prediction.create(req.body.data);
+    _prediction =  await Prediction.aggregate([
+      {
+        $lookup: {
+          from: "profiles",
+          localField: "predictedBy",
+          foreignField: "walletID",
+          as: "user",
+        },
+      },
+      {
+        $match:{
+             'fixtureId': _prediction.fixtureId 
+        }
+      }
+    ]).exec()
+    socket.trigger("prediction-channel","new-prediction",{data:_prediction})
     res.status(200).json({
       status: "success",
       message: "Prediction created successfully!",
