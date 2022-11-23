@@ -3,14 +3,14 @@ const Prediction = require("../models/Prediction");
 const Profile = require("../models/Profile");
 
 const getAll = async(data) =>{
-  let data = [];
+  let __data = [];
   index = 0;
   await data.forEach(async element => {
     element.username = await Profile.findOne({walletID:element.predictedBy})
     data[index] = element;
     index++;
   });
-  return data;
+  return __data;
 
 }
 module.exports = {
@@ -24,7 +24,6 @@ module.exports = {
   getPredictions: expressAsyncHandler(async (req, res) => {
     const userid = req.query.userid || "";
     const fixtureid = req.query.fixtureid || "";
-    
     const data = userid
       ? await Prediction.find({ predictedBy: userid })
       : fixtureid
@@ -45,7 +44,7 @@ module.exports = {
         ])
       : await Prediction.find();
     console.log(getAll(data));
-    
+
     res.status(200).json({
       status: "success",
       message: "Predictions fetched successfully!",
