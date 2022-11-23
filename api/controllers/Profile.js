@@ -12,23 +12,19 @@ module.exports = {
         profile.username = req.body.username
         await profile.save();
     }
-    if(profile && profile?.username===""){
-        let username;
-        await fetch("https://api.namefake.com/").then(res=>res.json()).then(res=>{
-            console.log(res);
-            username = res.username;
+    if(profile && !profile.username){
+        await fetch("https://api.namefake.com/").then(res=>res.json()).then(async res=>{
+            profile.username = res.username;
+            await profile.save();  
         })
-        profile.username = username;
-        await profile.save();  
         profile = await Profile.findOne({walletID:req.body.userPublicAddress})
+        console.log("existing user",profile);
     }
     if(!profile){
-        let username;
-        fetch("https://api.namefake.com/").then(res=>res.json()).then(res=>{
-            console.log(res);
-            username = res.username;
+        await fetch("https://api.namefake.com/").then(res=>res.json()).then(async res=>{
+            profile = await Profile.create({walletID:req.body.userPublicAddress,username:res.username})
         })
-        profile = await Profile.create({walletID:req.body.userPublicAddress,username:username})
+        console.log("new profile",profile)
     }
     res.status(200).send({profile: profile});
   })
