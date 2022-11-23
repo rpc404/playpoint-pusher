@@ -5,14 +5,12 @@ const Profile = require("../models/Profile");
 var __data = [];
 const getAll = async(data) =>{
   index = 0;
-  await data.forEach(async element => {
+  __data = await data.forEach(async element => {
     element.username = await Profile.findOne({walletID:element.predictedBy})
-    __data[index] = element;
-    index++;
-    return __data;
+    return element;
   });
 
-  console.log("allData",__data);
+  console.log("allData", __data);
   return __data;
 }
 module.exports = {
