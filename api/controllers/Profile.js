@@ -12,7 +12,7 @@ module.exports = {
         profile.username = req.body.username
         await profile.save();
     }
-    if(profile.username===""){
+    if(profile && profile?.username===""){
         let username;
         await fetch("https://api.namefake.com/").then(res=>res.json()).then(res=>{
             console.log(res);
@@ -25,6 +25,7 @@ module.exports = {
     if(!profile){
         let username;
         fetch("https://api.namefake.com/").then(res=>res.json()).then(res=>{
+            console.log(res);
             username = res.username;
         })
         profile = await Profile.create({walletID:req.body.userPublicAddress,username:username})
