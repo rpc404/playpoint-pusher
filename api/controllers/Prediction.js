@@ -5,6 +5,7 @@ const socket = require("../../utils/socket")
 module.exports = {
   setPrediction: expressAsyncHandler(async (req, res) => {
     await Prediction.create(req.body.data);
+  
     socket.trigger("prediction-channel","new-prediction",{data:req.body.data})
     res.status(200).json({
       status: "success",
