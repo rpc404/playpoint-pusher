@@ -18,13 +18,11 @@ module.exports = {
             await profile.save();  
         })
         profile = await Profile.findOne({walletID:req.body.userPublicAddress})
-        console.log("existing user",profile);
     }
     if(!profile){
         await fetch("https://api.namefake.com/").then(res=>res.json()).then(async res=>{
             profile = await Profile.create({walletID:req.body.userPublicAddress,username:res.username})
         })
-        console.log("new profile",profile)
     }
     res.status(200).send({profile: profile});
   })
