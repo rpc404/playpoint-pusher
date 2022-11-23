@@ -7,7 +7,8 @@ const getAll = async(data) =>{
   index = 0;
   await data.forEach(async element => {
     element.username = await Profile.findOne({walletID:element.predictedBy})
-    data[index] = element;
+    __data[index] = element;
+    console.log(__data[index]);
     index++;
   });
   return __data;
