@@ -8,11 +8,9 @@ const getAll = async(data) =>{
   await data.forEach(async element => {
     element.username = await Profile.findOne({walletID:element.predictedBy})
     __data[index] = element;
-    console.log(__data[index]);
     index++;
   });
   return __data;
-
 }
 module.exports = {
   setPrediction: expressAsyncHandler(async (req, res) => {
