@@ -15,6 +15,7 @@ module.exports = {
     if(profile.username===""){
         let username;
         await fetch("https://api.namefake.com/").then(res=>res.json()).then(res=>{
+            console.log(res);
             username = res.username;
         })
         profile.username = username;
