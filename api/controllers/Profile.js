@@ -1,6 +1,8 @@
 const Profile = require("../models/Profile");
 const expressAsyncHandler = require("express-async-handler");
 const { sanitizeQueryInput } = require("../../utils/QuerySanitizer");
+const { uniqueNamesGenerator, adjectives, names  } = require('unique-names-generator');
+
 
 module.exports = {
   /**
@@ -8,21 +10,18 @@ module.exports = {
    */
   setProfile: expressAsyncHandler(async (req, res) => {
     let profile = await Profile.findOne({walletID:req.body.userPublicAddress})
+    const randomName = uniqueNamesGenerator({ dictionaries: [adjectives, names] }); 
     if(req.body.username && profile){
         profile.username = req.body.username
         await profile.save();
     }
     if(profile && !profile.username){
-        await fetch("https://api.namefake.com/").then(res=>res.json()).then(async res=>{
-            profile.username = res.username;
-            await profile.save();  
-        })
+        profile.username = randomName;
+        await profile.save();  
         profile = await Profile.findOne({walletID:req.body.userPublicAddress})
     }
     if(!profile){
-        await fetch("https://api.namefake.com/").then(res=>res.json()).then(async res=>{
-            profile = await Profile.create({walletID:req.body.userPublicAddress,username:res.username})
-        })
+        profile = await Profile.create({walletID:req.body.userPublicAddress,username:randomName})
     }
     res.status(200).send({profile: profile});
   })
