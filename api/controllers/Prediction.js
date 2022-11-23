@@ -20,10 +20,10 @@ module.exports = {
       ? await Prediction.aggregate([
           {
             $lookup: {
-              from: "profile",
-              localField: "walletID",
-              foreignField: "predictedBy",
-              as: "predict_user",
+              from: "profiles",
+              localField: "predictedBy",
+              foreignField: "walletID",
+              as: "user",
             },
           },
           {
@@ -31,7 +31,7 @@ module.exports = {
                  'fixtureId': fixtureid 
             }
           }
-        ])
+        ]).exec()
       : await Prediction.find();
 
 
