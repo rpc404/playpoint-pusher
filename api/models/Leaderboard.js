@@ -17,7 +17,10 @@ const returnType = (type, require, requiredMessage) => {
 };
 
 const leaderboardSchema = new Schema({
-  fixtureId: returnType(String, true, "Fixture ID is required!"),
+  fixture: {
+    HomeTeam: returnType(String, true, "Home team is required!"),
+    AwayTeam: returnType(String, true, "Away team is required!"),
+  },
   totalUsers: returnType(Number, true, "Total users is required!"),
   totalVolume: returnType(Number, true, "Total volume is required!"),
   created_at: {
