@@ -17,7 +17,9 @@ const returnType = (type, require, requiredMessage) => {
 };
 
 const leaderboardSchema = new Schema({
+  marketplaceSlug: returnType(String, true, "Marketplace slug is required"),
   fixture: {
+    fixtureId: returnType(String, true, "Fixture ID is required"),
     HomeTeam: returnType(String, true, "Home team is required!"),
     AwayTeam: returnType(String, true, "Away team is required!"),
   },
