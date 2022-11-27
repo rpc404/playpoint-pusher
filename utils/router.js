@@ -33,6 +33,7 @@ const {
   createLeaderboard,
   updateLeaderboard,
   deleteLeaderboard,
+  getLeaderboardsByMarketplaceSlug,
 } = require("../api/controllers/Leaderboards");
 const {
   setPrediction,
@@ -80,6 +81,7 @@ APIRouter.get("/results", getResultController)
 
 // @note Leaderboards API Endpoints
 APIRouter.get("/leaderboards", getLeaderboards)
+  .get("/leaderboards/:marketplaceSlug", getLeaderboardsByMarketplaceSlug)
   .post("/leaderboards", createLeaderboard)
   .patch("/leaderboards/:leaderboardId", updateLeaderboard)
   .delete("/leaderboards/:leaderboardId", deleteLeaderboard);

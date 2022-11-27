@@ -25,10 +25,7 @@ const leaderboardSchema = new Schema({
   },
   totalUsers: returnType(Number, true, "Total users is required!"),
   totalVolume: returnType(Number, true, "Total volume is required!"),
-  created_at: {
-    type: Date,
-    default: Date.now(),
-  },
+  created_at: returnType(Date, false),
   updated_at: Date,
 });
 
