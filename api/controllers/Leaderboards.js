@@ -12,8 +12,7 @@ module.exports = {
     res.status(200).json({
       msg: "Leaderboard created succefully!",
       response: await Leaderboard.create({
-        ...req.body,
-        fixtureId: req.params["fixtureId"],
+        ...req.body
       }),
     });
   }),
