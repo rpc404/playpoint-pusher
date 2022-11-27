@@ -22,14 +22,12 @@ module.exports = {
   /**
    * @dev Get All Marketplaces
    */
-  getMarketplaces: expressAsyncHandler(async (req, res) =>{
-    const allMarketplace = await Marketplace.find();    
-      res.status(200).json({
-        marketplaces: allMarketplace,
-      })
-  }
-
-  ),
+  getMarketplaces: expressAsyncHandler(async (req, res) => {
+    const allMarketplace = await Marketplace.find();
+    res.status(200).json({
+      marketplaces: allMarketplace,
+    });
+  }),
 
   /**
    * @dev New Marketplaces
@@ -45,7 +43,8 @@ module.exports = {
     /**
      * @note fallback for marketplace is required
      */
-    const { marketplaceName, marketplaceSlug, tags, teamType } = req.body;
+    const { tags } =
+      req.body;
     const { filename } = req.file;
 
     // deepcode ignore PT: Heroku won't expose file system
@@ -62,15 +61,13 @@ module.exports = {
           else {
             res.status(200).json({
               response: await Marketplace.create({
-                marketplaceName,
-                marketplaceSlug,
+                ...req.body,
                 marketplaceCoverImage: {
                   fileId: result.fileId,
                   url: result?.url,
                 },
                 // deepcode ignore HTTPSourceWithUncheckedType: <please specify a reason of ignoring this>
                 tags: tags.split(","),
-                teamType,
               }),
               message: "Marketplace created successfully!",
             });
