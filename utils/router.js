@@ -12,6 +12,7 @@ const {
   updateFixturesController,
   deleteFixturesController,
   getFixturesByMarketplaceSlugController,
+  updateFixtureStatus,
 } = require("../api/controllers/Fixture");
 const {
   getQuestionaireController,
@@ -66,7 +67,8 @@ APIRouter.get("/fixture", getFixturesController)
   )
   .post("/new-fixture", authorize, newFixtureController)
   .patch("/update-fixture/:id",authorize, updateFixturesController)
-  .delete("/delete-fixture/:id",authorize, deleteFixturesController);
+  .delete("/delete-fixture/:id",authorize, deleteFixturesController)
+  .post("/update-fixture-status/:fixtureId/:status",authorize, updateFixtureStatus);
 
 // @note Questionaires API Endpoints
 APIRouter.get("/questionaires", getQuestionaireController)
