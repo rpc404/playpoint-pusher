@@ -1,11 +1,11 @@
 const expressAsyncHandler = require("express-async-handler");
 const Prediction = require("../models/Prediction");
-const socket = require("../../utils/socket")
+const socket = require("../../utils/socket");
 
 module.exports = {
   setPrediction: expressAsyncHandler(async (req, res) => {
     let _prediction = await Prediction.create(req.body.data);
-    _prediction =  await Prediction.aggregate([
+    _prediction = await Prediction.aggregate([
       {
         $lookup: {
           from: "profiles",
@@ -15,12 +15,14 @@ module.exports = {
         },
       },
       {
-        $match:{
-             '_id': _prediction._id 
-        }
-      }
-    ]).exec()
-    socket.trigger("prediction-channel","new-prediction",{data:_prediction})
+        $match: {
+          _id: _prediction._id,
+        },
+      },
+    ]).exec();
+    socket.trigger("prediction-channel", "new-prediction", {
+      data: _prediction,
+    });
     res.status(200).json({
       status: "success",
       message: "Prediction created successfully!",
@@ -30,7 +32,7 @@ module.exports = {
     const userid = req.query.userid || "";
     const fixtureid = req.query.fixtureid || "";
     const data = userid
-      ? await Prediction.find({ predictedBy: userid })
+      ? await Prediction.find({ predictedBy: userid }).populate('fixtureId')
       : fixtureid
       ? await Prediction.aggregate([
           {
@@ -42,13 +44,12 @@ module.exports = {
             },
           },
           {
-            $match:{
-                 'fixtureId': fixtureid 
-            }
-          }
+            $match: {
+              fixtureId: fixtureid,
+            },
+          },
         ]).exec()
       : await Prediction.find();
-
 
     res.status(200).json({
       status: "success",
