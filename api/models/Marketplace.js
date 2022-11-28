@@ -32,6 +32,7 @@ const marketplaceSchema = new Schema({
    * used for the logo of the team, need to be divided here
    */
   teamType: returnType(String, true, "Team type is required!"),
+  closed: returnType(String, true, "Closed is requried!"),
   created_at: {
     type: Date,
     default: Date.now(),

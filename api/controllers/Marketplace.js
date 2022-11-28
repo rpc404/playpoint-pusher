@@ -1,6 +1,7 @@
 var fs = require("fs");
 const expressAsyncHandler = require("express-async-handler");
 const Marketplace = require("../models/Marketplace");
+const Fixures = require("../models/Fixture");
 const { imageKit } = require("../../utils/ImageKit");
 const { sanitizeQueryInput } = require("../../utils/QuerySanitizer");
 
@@ -21,20 +22,12 @@ module.exports = {
   /**
    * @dev Get All Marketplaces
    */
-  getMarketplaces: expressAsyncHandler(async (req, res) =>{
+  getMarketplaces: expressAsyncHandler(async (req, res) => {
     const allMarketplace = await Marketplace.find();
-  //   let fixturesCount = 0;
-  //  allMarketplace.length > 0 && allMarketplace.map(async (_marketplace)=>{
-  //     fixturesCount += await Fixures.find({marketplaceSlug:_marketplace.marketplaceSlug}).count()
-  //     return fixturesCount;
-  //   })
-    
-      res.status(200).json({
-        marketplaces: allMarketplace,
-      })
-  }
-
-  ),
+    res.status(200).json({
+      marketplaces: allMarketplace,
+    });
+  }),
 
   /**
    * @dev New Marketplaces
@@ -50,7 +43,8 @@ module.exports = {
     /**
      * @note fallback for marketplace is required
      */
-    const { marketplaceName, marketplaceSlug, tags, teamType } = req.body;
+    const { tags } =
+      req.body;
     const { filename } = req.file;
 
     // deepcode ignore PT: Heroku won't expose file system
@@ -67,15 +61,13 @@ module.exports = {
           else {
             res.status(200).json({
               response: await Marketplace.create({
-                marketplaceName,
-                marketplaceSlug,
+                ...req.body,
                 marketplaceCoverImage: {
                   fileId: result.fileId,
                   url: result?.url,
                 },
                 // deepcode ignore HTTPSourceWithUncheckedType: <please specify a reason of ignoring this>
                 tags: tags.split(","),
-                teamType,
               }),
               message: "Marketplace created successfully!",
             });

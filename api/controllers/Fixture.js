@@ -48,8 +48,8 @@ module.exports = {
         HomeTeam: req.body.HomeTeam,
         AwayTeam: req.body.AwayTeam,
         Group: req.body.Group,
-        HomeTeamScore: 0,
-        AwayTeamScore: 0,
+        HomeTeamScore: req.body.HomeTeamScore || 0,
+        AwayTeamScore: req.body.AwayTeamScore || 0,
       }),
     });
   }),

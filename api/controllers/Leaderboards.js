@@ -1,4 +1,5 @@
 const expressAsyncHandler = require("express-async-handler");
+const { sanitizeQueryInput } = require("../../utils/QuerySanitizer");
 const Leaderboard = require("../models/Leaderboard");
 
 module.exports = {
@@ -7,13 +8,17 @@ module.exports = {
       leaderboards: await Leaderboard.find(),
     });
   }),
+  getLeaderboardsByMarketplaceSlug: expressAsyncHandler(async (req, res) => {
+    res.status(200).json({
+      leaderboards: await Leaderboard.find({ marketplaceSlug: sanitizeQueryInput(req.params["marketplaceSlug"]) }),
+    });
+  }),
 
   createLeaderboard: expressAsyncHandler(async (req, res) => {
     res.status(200).json({
       msg: "Leaderboard created succefully!",
       response: await Leaderboard.create({
         ...req.body,
-        fixtureId: req.params["fixtureId"],
       }),
     });
   }),
@@ -35,8 +40,10 @@ module.exports = {
 
   deleteLeaderboard: expressAsyncHandler(async (req, res) => {
     res.status(200).json({
-        msg: "Leaderboard deleted successfully!",
-        response: await Leaderboard.deleteOne({_id: req.params["leaderboardId"]})
-    })
-  })
+      msg: "Leaderboard deleted successfully!",
+      response: await Leaderboard.deleteOne({
+        _id: req.params["leaderboardId"],
+      }),
+    });
+  }),
 };

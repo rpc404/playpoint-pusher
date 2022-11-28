@@ -1,16 +1,11 @@
-module.exports = {
-  socketConfig: (http) => {
-    global.socketIO = require("socket.io")(http, {
-      cors: {
-        origin: "*",
-      },
-    });
+const Pusher = require("pusher");
 
-    socketIO.on("connection", (socket) => {
-      console.log(`⚡: ${socket.id} user just connected!`);
-      socket.on("disconnect", () => {
-        console.log("🔥: A user disconnected!");
-      });
-    });
-  },
-};
+const socket = new Pusher({
+  appId: "1514858",
+  key: "e6640b48a82cccbb13d0",
+  secret: process.env.PUSHER_APP_SECRET,
+  cluster: "ap2",
+  useTLS: true
+});
+
+module.exports = socket;
