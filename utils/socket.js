@@ -1,8 +1,9 @@
 const Pusher = require("pusher");
+
 const socket = new Pusher({
-  appId: "1514841",
-  key: "4dd831b4f90804d6ebf4",
-  secret: "daf1a93f424b0666a500",
+  appId: "1514858",
+  key: "e6640b48a82cccbb13d0",
+  secret: process.env.PUSHER_APP_SECRET,
   cluster: "ap2",
   useTLS: true
 });
