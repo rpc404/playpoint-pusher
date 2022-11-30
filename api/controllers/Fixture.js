@@ -132,6 +132,8 @@ module.exports = {
       await tempFixture.save();
     }
 
+    
+
     tempFixture &&
       res.status(200).json({
         message: "Updated Fixture Successfully!",
