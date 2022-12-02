@@ -94,4 +94,11 @@ module.exports = {
       }),
     })
   ),
+
+  createLeaderboard: expressAsyncHandler(async (req, res) => {
+    res.status(200).json({
+      
+    });
+  }),
+
 };
