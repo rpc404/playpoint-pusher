@@ -1,16 +1,20 @@
 const Fixture = require("../models/Fixture");
 const expressAsyncHandler = require("express-async-handler");
 const { sanitizeQueryInput } = require("../../utils/QuerySanitizer");
+const FixtureStatus = require("../models/FixtureStatus");
 
 module.exports = {
   /**
    * @dev Get Specific Marketplaces
    */
   getSpecificFixtureController: expressAsyncHandler(async (req, res) => {
+    const data = await Fixture.findOne({
+      _id: sanitizeQueryInput(req.params["id"]),
+    });
+    const { status } = await FixtureStatus.findOne({fixtureId: sanitizeQueryInput(req.params["id"])}) || {status: null}
     res.status(200).send({
-      fixture: await Fixture.findOne({
-        _id: sanitizeQueryInput(req.params["id"]),
-      }),
+      fixture: data,
+      status 
     });
   }),
 
@@ -18,7 +22,18 @@ module.exports = {
    * @dev Get All Fixtures
    */
   getFixturesController: expressAsyncHandler(async (req, res) =>
-    res.status(200).json({ fixtures: await Fixture.find() })
+    res.status(200).json({
+      fixtures: await Fixture.aggregate([
+        {
+          $lookup: {
+            from: "fixture-statuses",
+            localField: "_id",
+            foreignField: "fixtureId",
+            as: "status",
+          },
+        },
+      ]).exec(),
+    })
   ),
 
   /**
@@ -27,9 +42,23 @@ module.exports = {
   getFixturesByMarketplaceSlugController: expressAsyncHandler(
     async (req, res) =>
       res.status(200).json({
-        fixtures: await Fixture.find({
-          marketplaceSlug: sanitizeQueryInput(req.params["marketplaceSlug"]),
-        }),
+        fixtures: await Fixture.aggregate([
+          {
+            $lookup: {
+              from: "fixture-statuses",
+              localField: "_id",
+              foreignField: "fixtureId",
+              as: "status",
+            },
+          },
+          {
+            $match: {
+              marketplaceSlug: sanitizeQueryInput(
+                req.params["marketplaceSlug"]
+              ),
+            },
+          },
+        ]).exec(),
       })
   ),
 
@@ -37,20 +66,23 @@ module.exports = {
    * @dev New Fixture
    */
   newFixtureController: expressAsyncHandler(async (req, res) => {
+    const data = await Fixture.create({
+      marketplaceSlug: req.body.marketplaceSlug,
+      MatchNumber: req.body.MatchNumber,
+      RoundNumber: req.body.RoundNumber,
+      DateUtc: req.body.DateUtc,
+      Location: req.body.Location,
+      HomeTeam: req.body.HomeTeam,
+      AwayTeam: req.body.AwayTeam,
+      Group: req.body.Group,
+      HomeTeamScore: req.body.HomeTeamScore || 0,
+      AwayTeamScore: req.body.AwayTeamScore || 0,
+    });
+
+    await FixtureStatus.create({fixtureId: data._id})
     res.status(200).json({
       message: "New Fixture created successfully!",
-      response: await Fixture.create({
-        marketplaceSlug: req.body.marketplaceSlug,
-        MatchNumber: req.body.MatchNumber,
-        RoundNumber: req.body.RoundNumber,
-        DateUtc: req.body.DateUtc,
-        Location: req.body.Location,
-        HomeTeam: req.body.HomeTeam,
-        AwayTeam: req.body.AwayTeam,
-        Group: req.body.Group,
-        HomeTeamScore: req.body.HomeTeamScore || 0,
-        AwayTeamScore: req.body.AwayTeamScore || 0,
-      }),
+      response: data,
     });
   }),
   /**
@@ -81,6 +113,31 @@ module.exports = {
             closed: req.body.closed || tempFixture.closed,
           },
         }),
+      });
+  }),
+
+  /**
+   * @dev Update Fixture Status
+   */
+  updateFixtureStatus: expressAsyncHandler(async (req, res) => {
+    const query = { fixtureId: req.params["fixtureId"] };
+    const operation = req.params["status"];
+    let tempFixture = await FixtureStatus.findOne(query);
+
+    if (!tempFixture) {
+      const data = req.params;
+      tempFixture = await FixtureStatus.create(data);
+    } else {
+      tempFixture.status = operation;
+      await tempFixture.save();
+    }
+
+    
+
+    tempFixture &&
+      res.status(200).json({
+        message: "Updated Fixture Successfully!",
+        response: tempFixture,
       });
   }),
   /**

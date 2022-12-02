@@ -18,7 +18,7 @@ const returnType = (type, require, requiredMessage) => {
 
 const predictionSchema = new Schema({
   marketplaceSlug: returnType(String, true, "Marketplace slug is required"),
-  fixtureId: returnType(String, true, "Fixture Id is required"),
+  fixtureId: { type: Schema.Types.ObjectId, ref: 'fixture' },
   predictionType: returnType(String, true, "Prediction Type is required!"),
   questionaireId: returnType(String, true, "Questionaire ID is required!"),
   predictedBy: returnType(String, true, "Predicted By is required!"),
