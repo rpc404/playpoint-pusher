@@ -6,8 +6,6 @@ const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 const http = require("http").Server(app);
-
-
 const { dbConfig } = require("./utils/db");
 const APIRouter = require("./utils/router");
 const PORT = process.env.PORT || 4000;
@@ -29,10 +27,7 @@ global.__basedir = __dirname;
  */
 dbConfig();
 
-
 // @dev pusher configuration
-
-
 
 /**
  * @dev Router Configuration
@@ -45,10 +40,10 @@ const apiLimiter = rateLimit({
 });
 
 app
-  .get("/", (req, res) =>{
-    res.json({ message: "Welcome to V1 Playpoint API! 👌" })
-  }
-  )
+  .get("/", (req, res) => {
+   
+    res.json({ message: "Welcome to V1 Playpoint API! 👌" });
+  })
   // this must be used for production
   // .use("/api/v1", apiLimiter, APIRouter)
   .use("/api/v1", APIRouter)
