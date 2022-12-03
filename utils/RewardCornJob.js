@@ -8,7 +8,7 @@ let provider = new HDWalletProvider({
       phrase: mnemonicPhrase,
     },
     providerOrUrl:
-      "https://sepolia.infura.io/v3/bea174ca9f4644698c47aff0b526774c",
+      process.env.INFURA,
   });
 const Web3Provider = new ethers.providers.Web3Provider(provider);
 const PredictionContract = new ethers.Contract(
