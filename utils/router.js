@@ -39,12 +39,13 @@ const {
 const {
   setPrediction,
   getPredictions,
+  getPredictionById,
 } = require("../api/controllers/Prediction");
 const { marketplaceStats } = require("../api/helpers/marketplaceStats");
 const { setProfile } = require("../api/controllers/Profile");
 
 const APIRouter = require("express").Router();
-const { authorize } = require("../api/middlewares/authorize")
+const { authorize } = require("../api/middlewares/authorize");
 
 // @note Marketplace API Endpoints
 APIRouter.get("/marketplace-specific/:marketplaceSlug", getSpecificMarketplace)
@@ -55,8 +56,8 @@ APIRouter.get("/marketplace-specific/:marketplaceSlug", getSpecificMarketplace)
     multerUpload.single("marketplaceCoverImage"),
     newMarketplace
   )
-  .patch("/update-marketplace/:marketplaceSlug",authorize, updateMarketplace)
-  .delete("/delete-marketplace/:marketplaceSlug",authorize, deleteMarketplace);
+  .patch("/update-marketplace/:marketplaceSlug", authorize, updateMarketplace)
+  .delete("/delete-marketplace/:marketplaceSlug", authorize, deleteMarketplace);
 
 // @note Fixture API Endpoints
 APIRouter.get("/fixture", getFixturesController)
@@ -66,33 +67,45 @@ APIRouter.get("/fixture", getFixturesController)
     getFixturesByMarketplaceSlugController
   )
   .post("/new-fixture", authorize, newFixtureController)
-  .patch("/update-fixture/:id",authorize, updateFixturesController)
-  .delete("/delete-fixture/:id",authorize, deleteFixturesController)
-  .post("/update-fixture-status/:fixtureId/:status",authorize, updateFixtureStatus);
+  .patch("/update-fixture/:id", authorize, updateFixturesController)
+  .delete("/delete-fixture/:id", authorize, deleteFixturesController)
+  .post(
+    "/update-fixture-status/:fixtureId/:status",
+    authorize,
+    updateFixtureStatus
+  );
 
 // @note Questionaires API Endpoints
 APIRouter.get("/questionaires", getQuestionaireController)
   .get("/questionaires/:fixtureId", getSpecificQuestionaireController)
-  .post("/new-questionaire",authorize, newQuestionaireController)
-  .patch("/update-questionaire/:questionaireId",authorize, updateQuestionaireController)
-  .delete("/delete-questionaire/:questionaireId",authorize, deleteQuestionaireController);
+  .post("/new-questionaire", authorize, newQuestionaireController)
+  .patch(
+    "/update-questionaire/:questionaireId",
+    authorize,
+    updateQuestionaireController
+  )
+  .delete(
+    "/delete-questionaire/:questionaireId",
+    authorize,
+    deleteQuestionaireController
+  );
 
 // @note Results API Endpoints
 APIRouter.get("/results", getResultController)
-  .post("/new-result",authorize, newResultController)
-  .patch("/update-result",authorize, updateResultController)
-  .delete("/delete-result",authorize, deleteResultController);
+  .post("/new-result", authorize, newResultController)
+  .patch("/update-result", authorize, updateResultController)
+  .delete("/delete-result", authorize, deleteResultController);
 
 // @note Leaderboards API Endpoints
-APIRouter
-.post("/leaderboards",authorize, createLeaderboard)
-.patch("/leaderboards/:leaderboardId",authorize, updateLeaderboard)
-.delete("/leaderboards/:leaderboardId",authorize, deleteLeaderboard)
-.get("/leaderboards/:marketplaceSlug", getLeaderboardsByMarketplaceSlug)
-
+APIRouter.post("/leaderboards", authorize, createLeaderboard)
+  .patch("/leaderboards/:leaderboardId", authorize, updateLeaderboard)
+  .delete("/leaderboards/:leaderboardId", authorize, deleteLeaderboard)
+  .get("/leaderboards/:marketplaceSlug", getLeaderboardsByMarketplaceSlug);
 
 // @note Active Prediction
-APIRouter.post("/prediction", setPrediction).get("/prediction", getPredictions);
+APIRouter.post("/prediction", setPrediction)
+  .get("/prediction", getPredictions)
+  .get("/predictionbyid/:pid", getPredictionById);
 
 // @note Admin Status
 APIRouter.get("/admin-stats", getCountStatus).get(
