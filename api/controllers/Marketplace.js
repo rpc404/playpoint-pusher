@@ -64,7 +64,7 @@ module.exports = {
                 ...req.body,
                 marketplaceCoverImage: {
                   fileId: result.fileId,
-                  url: result?.url,
+                  url: result.url,
                 },
                 // deepcode ignore HTTPSourceWithUncheckedType: <please specify a reason of ignoring this>
                 tags: tags.split(","),
@@ -137,7 +137,7 @@ module.exports = {
 
     if (marketplace) {
       await Marketplace.deleteOne(query);
-      await imageKit.deleteFile(marketplace?.marketplaceCoverImage?.fileId);
+      await imageKit.deleteFile(marketplace.marketplaceCoverImage.fileId);
 
       res.status(200).json({
         message: `Marketplace ${req.params["marketplaceSlug"]} deleted successfully!`,

@@ -16,12 +16,9 @@ const returnType = (type, require, requiredMessage) => {
   };
 };
 
-const resultSchema = new Schema({
-  predictionId: { type: Schema.Types.ObjectId, ref: 'prediction' },
-  points: returnType(Number, true, "Points are required!"), // contains points, ranks, amount
-  rewardAmount: returnType(Number,true,"Reward Amount is required"),
-  isPaid: returnType(Boolean,true, "Required"),
-  wallet: returnType(String, true, "walet are required!"),
+const answerSchema = new Schema({
+  questionaireId: { type: Schema.Types.ObjectId, ref: 'questionaire' },
+  answers: returnType(Array, true, "Answers are required!"),
   created_at: {
     type: Date,
     default: Date.now(),
@@ -29,4 +26,4 @@ const resultSchema = new Schema({
   updated_at: Date,
 });
 
-module.exports = Model("results", resultSchema);
+module.exports = Model("answer", answerSchema);
