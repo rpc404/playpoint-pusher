@@ -207,7 +207,7 @@ module.exports = {
     final2.map(async _data=>{
       const _prediction = await Result.findOne({predictionId: _data.predictionId})
       if(!_prediction){
-        const bc = await sendReward(_data.points,_data.predictionId,_data.wallet,_data.rewardAmount);
+        const bc = await sendReward(_data.points,_data.predictionId,_data.wallet,(_data.rewardAmount/0.02));
         if(bc.hash){
           _data.isPaid = true;
           await Result.create(_data);
