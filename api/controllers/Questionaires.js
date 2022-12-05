@@ -14,7 +14,17 @@ module.exports = {
    * @dev Get All Questionaires
    */
   getQuestionaireController: expressAsyncHandler(async (req, res) => {
-    res.status(200).json({ questionaires: await Questionaire.find() });
+    const data = await Questionaire.aggregate([
+      {
+        $lookup: {
+          from: "fixtures",
+          localField: "fixtureId",
+          foreignField: "_id",
+          as: "fixtures",
+        },
+      },
+    ]).exec()
+    res.status(200).json({ questionaires: data });
   }),
   /**
    * @dev New Questionaires
