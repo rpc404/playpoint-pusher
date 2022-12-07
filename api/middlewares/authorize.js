@@ -7,7 +7,8 @@ module.exports = {
        
         let token;
         if (
-            req.method === "POST" &&
+           (req.method === "POST" ||
+            req.method === "GET" )&&
             req.headers.authorization &&
             req.headers.authorization.startsWith("Admin-")
         ) {
