@@ -42,7 +42,6 @@ module.exports = {
       let userCount = 0;
       let volume = 0;
       let users = [];
-  
       data.map((prediction) => {
         if (ObjectId(fixture._id).toString() == ObjectId(prediction.fixtureId).toString()) {
           volume += 10;
@@ -69,16 +68,58 @@ module.exports = {
         return i == a.indexOf(itm);
     }).sort((a,b)=>b.amount - a.amount)
       volume = volume+(10*(users.length))
-      topranked.push(users);
       return leaderboard.push({ fixture, userCount, volume, "topuser":users[0] });
     });
 
-    console.log(topranked.concat(","))
     leaderboard = leaderboard.sort((a, b) => {
       return b.userCount + b.volume - (a.userCount + a.volume);
     });
+
+    // get winners
+    let _winners = await Result.aggregate([
+      {
+        $lookup:{
+          from: "profiles",
+          localField: "wallet",
+          foreignField: "walletID",
+          as: "user",
+        }
+      }
+    ]).sort("points")
+
+    _winners.map(winner=>{
+      topranked.push({
+        wallet: winner.wallet,
+        amount: winner.rewardAmount,
+        username: winner.user[0].username,
+        points: winner.points
+      })
+      return topranked
+    })
+    // console.log(topranked)
+    topranked = topranked.reduce(function (acc, val) {
+      var o = acc
+        .filter(function (obj) {
+          return obj.wallet == val.wallet;
+        })
+        .pop() || { username: val.username, amount: val.amount, points: val.points, wallet: val.wallet };
+
+      o.amount += val.amount;
+      o.points += val.points;
+
+      acc.push(o);
+      return acc;
+    }, []);
+
+    
+    topranked = topranked.filter(function(itm, i, a) {
+      return i == a.indexOf(itm);
+     }).sort((a,b)=>b.amount - a.amount)
+     
+
     res.status(200).json({
       leaderboard,
+      topranked
     });
   }),
 
