@@ -2,6 +2,8 @@ const Fixture = require("../models/Fixture");
 const expressAsyncHandler = require("express-async-handler");
 const { sanitizeQueryInput } = require("../../utils/QuerySanitizer");
 const FixtureStatus = require("../models/FixtureStatus");
+const { default: mongoose } = require("mongoose");
+const Prediction = require("../models/Prediction");
 
 module.exports = {
   /**
@@ -21,19 +23,31 @@ module.exports = {
   /**
    * @dev Get All Fixtures
    */
-  getFixturesController: expressAsyncHandler(async (req, res) =>
-    res.status(200).json({
-      fixtures: await Fixture.aggregate([
-        {
-          $lookup: {
-            from: "fixture-statuses",
-            localField: "_id",
-            foreignField: "fixtureId",
-            as: "status",
-          },
+  getFixturesController: expressAsyncHandler(async (req, res) =>{
+    const data = await Fixture.aggregate([
+      {
+        $lookup: {
+          from: "fixture-statuses",
+          localField: "_id",
+          foreignField: "fixtureId",
+          as: "status",
         },
-      ]).exec(),
+      },
+      {
+        $lookup: {
+          from: "predictions",
+          localField: "_id",
+          foreignField: "fixtureId",
+          as: "predictions",
+        },
+      },
+      ]).exec()
+    
+
+    res.status(200).json({
+      fixtures: data,
     })
+  }
   ),
 
   /**
@@ -151,4 +165,11 @@ module.exports = {
       }),
     })
   ),
+
+  createLeaderboard: expressAsyncHandler(async (req, res) => {
+    res.status(200).json({
+      
+    });
+  }),
+
 };

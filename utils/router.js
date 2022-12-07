@@ -43,7 +43,9 @@ const {
   getPredictionById,
 } = require("../api/controllers/Prediction");
 const { marketplaceStats } = require("../api/helpers/marketplaceStats");
+
 const { setProfile, getAdmins, addAdmin, removeAdmin } = require("../api/controllers/Profile");
+
 
 const APIRouter = require("express").Router();
 const { authorize } = require("../api/middlewares/authorize");
@@ -116,9 +118,7 @@ APIRouter.get("/admin-stats", getCountStatus).get(
   marketplaceStats
 );
 
-APIRouter.post("/profile", setProfile).get("/profile/:username", (req, res) =>
-  console.log(req.params.username)
-);
+APIRouter.post("/profile", setProfile).get("/profile", getProfile)
 
 APIRouter.get("/admins", authorize, getAdmins).post("/admin-add", authorize, addAdmin).post("/delete-admin", authorize, removeAdmin)
 
