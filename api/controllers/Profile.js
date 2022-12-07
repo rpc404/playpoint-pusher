@@ -2,6 +2,7 @@ const Profile = require("../models/Profile");
 const expressAsyncHandler = require("express-async-handler");
 const { sanitizeQueryInput } = require("../../utils/QuerySanitizer");
 const { uniqueNamesGenerator, adjectives, names  } = require('unique-names-generator');
+const Admin = require("../models/Admin");
 
 
 module.exports = {
@@ -24,6 +25,28 @@ module.exports = {
         profile = await Profile.create({walletID:req.body.userPublicAddress,username:randomName})
     }
     res.status(200).send({profile: profile});
+  }),
+
+  getAdmins: expressAsyncHandler( async(req,res)=>{
+    const data = await Admin.find({})
+    res.status(200).json(data)
+  }),
+
+  addAdmin: expressAsyncHandler( async(req,res)=>{
+    const {wallet, role, name} = req.body;
+    const existing = await Admin.findOne({wallet: wallet})
+    if(!existing){
+      const newAdmin = await Admin.create({wallet, role, name});
+      return res.status(201).json(newAdmin)
+    }
+    return res.status(200).json({msg:"Already Exist"})
+    
+  }),
+
+  removeAdmin: expressAsyncHandler( async(req, res)=>{
+    const {wallet} = req.body;
+    const _ = await Admin.deleteOne({_id: wallet})
+    res.status(200).json({_})
   })
 
 }
