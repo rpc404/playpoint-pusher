@@ -35,6 +35,7 @@ const {
   updateLeaderboard,
   deleteLeaderboard,
   getLeaderboardsByMarketplaceSlug,
+  getTopUsers,
 } = require("../api/controllers/Leaderboards");
 const {
   setPrediction,
@@ -100,7 +101,9 @@ APIRouter.get("/results", getResultController)
 APIRouter.post("/leaderboards", authorize, createLeaderboard)
   .patch("/leaderboards/:leaderboardId", authorize, updateLeaderboard)
   .delete("/leaderboards/:leaderboardId", authorize, deleteLeaderboard)
-  .get("/leaderboards/:marketplaceSlug", getLeaderboardsByMarketplaceSlug);
+  .get("/leaderboards/:marketplaceSlug", getLeaderboardsByMarketplaceSlug)
+  .get("/topusers/", getTopUsers);
+
 
 // @note Active Prediction
 APIRouter.post("/prediction", setPrediction)

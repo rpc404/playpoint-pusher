@@ -5,6 +5,7 @@ const { sanitizeQueryInput } = require("../../utils/QuerySanitizer");
 const Fixture = require("../models/Fixture");
 const Leaderboard = require("../models/Leaderboard");
 const Prediction = require("../models/Prediction");
+const Result = require("../models/Result")
 
 module.exports = {
   getLeaderboards: expressAsyncHandler(async (req, res) => {
@@ -36,10 +37,12 @@ module.exports = {
     });
 
     let leaderboard = [];
+    let topranked = [];
     fixtures.map((fixture, key) => {
       let userCount = 0;
       let volume = 0;
       let users = [];
+  
       data.map((prediction) => {
         if (ObjectId(fixture._id).toString() == ObjectId(prediction.fixtureId).toString()) {
           volume += 10;
@@ -62,16 +65,15 @@ module.exports = {
         acc.push(o);
         return acc;
       }, []);
-
-     
-
     users = users.filter(function(itm, i, a) {
         return i == a.indexOf(itm);
     }).sort((a,b)=>b.amount - a.amount)
       volume = volume+(10*(users.length))
-      return leaderboard.push({ fixture, userCount, volume, "topuser":users });
+      topranked.push(users);
+      return leaderboard.push({ fixture, userCount, volume, "topuser":users[0] });
     });
 
+    console.log(topranked.concat(","))
     leaderboard = leaderboard.sort((a, b) => {
       return b.userCount + b.volume - (a.userCount + a.volume);
     });
@@ -102,6 +104,31 @@ module.exports = {
         }
       ),
     });
+  }),
+
+  getTopUsers: expressAsyncHandler( async(req, res)=>{
+    const data = await Result.aggregate([
+      {
+        $lookup: {
+          from: "profiles",
+          localField: "wallet",
+          foreignField: "walletID",
+          as: "user",
+        },
+      },
+    ])
+    let final = [];
+    data.map(_results=>{
+      return final.push({
+        points: _results.points,
+        amount: _results.rewardAmount,
+        username: _results.user[0].username,
+        wallet: _results.wallet
+      })
+    })
+
+    res.send(final)
+
   }),
 
   deleteLeaderboard: expressAsyncHandler(async (req, res) => {

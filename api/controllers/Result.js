@@ -121,6 +121,7 @@ module.exports = {
     };
     let i = 0;
     const pseudo_final = standing.map((_st) => {
+      
       if (i < 3) {
           if (_st.length == 1) {
             if(i==0){
@@ -162,6 +163,7 @@ module.exports = {
         
       }
       if((_st.length==3 || _st.length>=3)){
+        
         if(i==0){
           _st.reward = rewardAmount.first+rewardAmount.second+rewardAmount.third;
           i =3;
@@ -180,14 +182,16 @@ module.exports = {
           return _st;
         }
       }
+     
       return _st;
     });
    
-    const final = pseudo_final.map(final=>{
+    const final = pseudo_final.map((final,i)=>{
+    
       const shared_reward = final["reward"]/(final.length) || 0;
       final["reward"] = {};
-      const _final = final.map(_=>{
-          _.rewardAmount = shared_reward;
+      const _final = final.map((_,i)=>{
+          _.rewardAmount = _.points > 0 ? shared_reward/0.02 : 0;
           return _;
       })
       return _final;
@@ -198,16 +202,17 @@ module.exports = {
     final.map(final__=>{
       if(final__.length > 0){
          final__.map(_f=>{
-          if(_f.rewardAmount > 0){
             return final2.push(_f)
-          }
          })
       }
     })
+
+    // console.log(final2)
+
     final2.map(async _data=>{
       const _prediction = await Result.findOne({predictionId: _data.predictionId})
       if(!_prediction){
-        const bc = await sendReward(_data.points,_data.predictionId,_data.wallet,(_data.rewardAmount/0.02));
+        const bc = await sendReward(_data.points,_data.predictionId,_data.wallet,(_data.rewardAmount > 0 ?_data.rewardAmount : 0));
         if(bc.hash){
           _data.isPaid = true;
           await Result.create(_data);
@@ -215,7 +220,7 @@ module.exports = {
       }
     })
     
-    res.status(200).json({ message:`Results Created Successfully! pool of ${totalPoolAmount}` });
+    res.status(200).json({ message:`Results Created Successfully! pool of ${totalPoolAmount/0.02}`});
   }),
   /**
    * @dev Update Results
