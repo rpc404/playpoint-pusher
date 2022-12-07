@@ -122,13 +122,14 @@ APIRouter.get("/admin-stats", getCountStatus).get(
   marketplaceStats
 );
 
-APIRouter.post("/profile", setProfile).get(
-  "/profile/:wallet",
-  authorize,
-  getAdmin
-);
+APIRouter.post("/profile", setProfile);
 APIRouter.get("/admins", authorize, getAdmins)
   .post("/admin-add", authorize, addAdmin)
-  .post("/delete-admin", authorize, removeAdmin);
+  .post("/delete-admin", authorize, removeAdmin)
+  .get(
+    "/admin/:wallet",
+    authorize,
+    getAdmin
+  );
 
 module.exports = APIRouter;

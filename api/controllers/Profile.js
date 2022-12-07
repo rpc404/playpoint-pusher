@@ -3,6 +3,7 @@ const expressAsyncHandler = require("express-async-handler");
 const { sanitizeQueryInput } = require("../../utils/QuerySanitizer");
 const { uniqueNamesGenerator, adjectives, names  } = require('unique-names-generator');
 const Admin = require("../models/Admin");
+var jwt = require('jsonwebtoken');
 
 
 module.exports = {
@@ -50,9 +51,14 @@ module.exports = {
   }),
 
   getAdmin: expressAsyncHandler( async(req, res)=>{
-    const {wallet} = req.body;
-    const _ = await Admin.deleteOne({_id: wallet})
-    res.status(200).json({_})
+    const {wallet} = req.params;
+    const admin = await Admin.findOne({wallet: wallet})
+    if(!admin){
+      return res.status(200).json({msg: "Not authorized"})
+    }else{
+      const token = jwt.sign(admin.wallet,"sshh")
+      return res.status(201).send({admin, token})
+    }
   })
 
 }
