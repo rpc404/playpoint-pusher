@@ -17,6 +17,14 @@ module.exports = {
     res.status(200).json({ data: results });
   }),
   /**
+   *  @dev Get User Results
+   */
+  getUserResultController: expressAsyncHandler(async (req, res) => {
+    const results = await Result.find({wallet: req.params.walletID}).populate('predictionId').sort('created_at')
+    res.status(200).json(results);
+  }),
+
+  /**
    * @dev New Results
    */
   newResultController: expressAsyncHandler(async (req, res) => {

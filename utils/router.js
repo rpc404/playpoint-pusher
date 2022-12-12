@@ -27,6 +27,7 @@ const {
   newResultController,
   updateResultController,
   deleteResultController,
+  getUserResultController,
 } = require("../api/controllers/Result");
 const { getCountStatus } = require("../api/helpers/adminStats");
 const {
@@ -50,6 +51,7 @@ const {
   addAdmin,
   removeAdmin,
   getAdmin,
+  getProfile,
 } = require("../api/controllers/Profile");
 
 const APIRouter = require("express").Router();
@@ -100,6 +102,7 @@ APIRouter.get("/questionaires", getQuestionaireController)
 
 // @note Results API Endpoints
 APIRouter.get("/results", getResultController)
+  .get("/results/:walletID",getUserResultController)
   .post("/new-result", authorize, newResultController)
   .patch("/update-result", authorize, updateResultController)
   .delete("/delete-result", authorize, deleteResultController);
