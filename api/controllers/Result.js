@@ -4,6 +4,7 @@ const Result = require("../models/Result");
 const Questionaires = require("../models/Questionaire");
 const Prediction = require("../models/Prediction");
 const { sendReward } = require("../../utils/RewardCornJob");
+const socket = require("../../utils/socket");
 
 
 
@@ -19,6 +20,7 @@ module.exports = {
    * @dev New Results
    */
   newResultController: expressAsyncHandler(async (req, res) => {
+  
     let { questionaireId, results } = req.body;
     results = results.split(",");
 
@@ -206,21 +208,27 @@ module.exports = {
          })
       }
     })
-
-    // console.log(final2)
-
-    final2.map(async _data=>{
+    res.status(200).json({ message:`Results Created Successfully! pool of ${totalPoolAmount/0.02}`})
+// console.log(final2)
+    return final2.map(async _data=>{
       const _prediction = await Result.findOne({predictionId: _data.predictionId})
       if(!_prediction){
         const bc = await sendReward(_data.points,_data.predictionId,_data.wallet,(_data.rewardAmount > 0 ?_data.rewardAmount : 0));
         if(bc.hash){
           _data.isPaid = true;
-          await Result.create(_data);
+          _data.txnhash = bc.hash;
+          console.log(bc.hash)
+          socket.trigger("result-channel", "newresult", JSON.stringify({
+              wallet: _data.wallet,
+              points: _data.points,
+              reward: _data.rewardAmount,
+              hash: bc.hash
+          }));
         }
+        await Result.create(_data);
       }
     })
     
-    res.status(200).json({ message:`Results Created Successfully! pool of ${totalPoolAmount/0.02}`});
   }),
   /**
    * @dev Update Results

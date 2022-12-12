@@ -22,6 +22,7 @@ const resultSchema = new Schema({
   rewardAmount: returnType(Number,true,"Reward Amount is required"),
   isPaid: returnType(Boolean,true, "Required"),
   wallet: returnType(String, true, "walet are required!"),
+  txnhash: returnType(String, false,""),
   created_at: {
     type: Date,
     default: Date.now(),
