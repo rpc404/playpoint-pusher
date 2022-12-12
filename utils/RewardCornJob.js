@@ -43,9 +43,10 @@ module.exports = {
               predictionId,
               wallet,
               true,
-             toFixed(amount * (10**18))
+             ethers.utils.parseEther(String(amount))
             ) : {msg: "send"}
             return reward;
             
         })
 }
+
