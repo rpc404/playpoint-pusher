@@ -16,14 +16,15 @@ const returnType = (type, require, requiredMessage) => {
   };
 };
 
-const predictionSchema = new Schema({
-  marketplaceSlug: returnType(String, true, "Marketplace slug is required"),
+const challengeSchema = new Schema({
   fixtureId: { type: Schema.Types.ObjectId, ref: 'fixture' },
-  predictionType: returnType(String, true, "Prediction Type is required!"),
-  questionaireId: returnType(String, true, "Questionaire ID is required!"),
-  predictedBy: returnType(String, true, "Predicted By is required!"),
-  amount: returnType(Number, true, "Amount is required!"),
-  answers: returnType(Object, true, "Answers is required!"),
+  predictionId:  { type: Schema.Types.ObjectId, ref: 'prediction' },
+  type: returnType(String, true, "Questionaire ID is required!"),
+  owner: returnType(String, true, "Predicted By is required!"),
+  participants: [{
+    userid:{ type: Schema.Types.ObjectId, ref: 'user' }
+  }],
+  status:returnType(String,true,"status is required"),
   created_at: {
     type: Date,
     default: Date.now(),
@@ -31,4 +32,4 @@ const predictionSchema = new Schema({
   updated_at: Date,
 });
 
-module.exports = Model("prediction", predictionSchema);
+module.exports = Model("challenge", challengeSchema);
