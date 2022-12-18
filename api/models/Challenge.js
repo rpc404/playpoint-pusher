@@ -21,6 +21,7 @@ const challengeSchema = new Schema({
   predictionId:  { type: Schema.Types.ObjectId, ref: 'prediction' },
   type: returnType(String, true, "Questionaire ID is required!"),
   owner: returnType(String, true, "Predicted By is required!"),
+  slot: returnType(Number,true, "Slot is required"),
   participants: [{
     userid:{ type: Schema.Types.ObjectId, ref: 'user' }
   }],

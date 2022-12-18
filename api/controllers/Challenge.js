@@ -6,7 +6,6 @@ const Challenge = require("../models/Challenge");
 
 module.export = {
 
-
     // @dev creates a duo or trio challenge
     createChallege: expressAsyncHandler( async(req,res)=>{
         const { predictionId, owner, type, participants } = req.body;
@@ -26,5 +25,24 @@ module.export = {
             return res.status(201).json({"msg":`New ${newChallenge.type} Challenge created`})
         }
 
-    })
+    }),
+  
+    /**
+   * @dev Get user challenges
+   */
+  getChallengesByUser: expressAsyncHandler( async (request, response)=>{
+    const challenges = await Challenge.find({owner: request.params.user});
+    response.status(200).json(challenges);
+  }),
+
+  /**
+   * @dev Get challenges by participants
+   */
+
+  getChallengesByChallenger: expressAsyncHandler( async(request, response)=>{
+    const challenges = await Challenge.find({participants: { $eleMatch:{userid: request.params.userid} }})
+    response.status(200).json(challenges);
+  })
+
+
 }
