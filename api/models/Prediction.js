@@ -24,24 +24,6 @@ const predictionSchema = new Schema({
   predictedBy: returnType(String, true, "Predicted By is required!"),
   amount: returnType(Number, true, "Amount is required!"),
   answers: returnType(Object, true, "Answers is required!"),
-  challenger: {
-    open: {
-      type: returnType(Boolean, true, "Open is required!"),
-      default: false,
-    },
-    type: {
-      type: returnType(String, true, "Challenge type is required!"),
-      default: "",
-    },
-    answers: {
-      type: returnType(Object, true, "Challenge answers is required!"),
-      default: {},
-    },
-    challengedBy: {
-      type: returnType(String, true, "Challenged By is required!"),
-      default: "",
-    },
-  },
   created_at: {
     type: Date,
     default: Date.now(),

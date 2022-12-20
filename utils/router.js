@@ -4,6 +4,7 @@ const {
   updateMarketplace,
   deleteMarketplace,
   getSpecificMarketplace,
+  closeMarketplace,
 } = require("../api/controllers/Marketplace");
 const {
   getSpecificFixtureController,
@@ -56,6 +57,7 @@ const {
 
 const APIRouter = require("express").Router();
 const { authorize } = require("../api/middlewares/authorize");
+const { getChallengesByUser, getChallengesByChallenger, createChallege } = require("../api/controllers/Challenge");
 
 // @note Marketplace API Endpoints
 APIRouter.get("/marketplace-specific/:marketplaceSlug", getSpecificMarketplace)
@@ -67,7 +69,9 @@ APIRouter.get("/marketplace-specific/:marketplaceSlug", getSpecificMarketplace)
     newMarketplace
   )
   .patch("/update-marketplace/:marketplaceSlug", authorize, updateMarketplace)
-  .delete("/delete-marketplace/:marketplaceSlug", authorize, deleteMarketplace);
+  .delete("/delete-marketplace/:marketplaceSlug", authorize, deleteMarketplace)
+  .patch("/close-marketplace/:slug", closeMarketplace);
+
 
 // @note Fixture API Endpoints
 APIRouter.get("/fixture", getFixturesController)
@@ -124,6 +128,14 @@ APIRouter.get("/admin-stats", getCountStatus).get(
   "/marketplace-stats/:marketplaceSlug",
   marketplaceStats
 );
+
+/**
+ * @dev challenge API
+ */
+
+APIRouter.get("/challenges-by-user/:userid", getChallengesByUser)
+        .get("/challenges-by-participants/:userid", getChallengesByChallenger)
+        .post("/new-challenge", createChallege);
 
 APIRouter.post("/profile", setProfile);
 APIRouter.get("/admins", authorize, getAdmins)
