@@ -17,13 +17,16 @@ const returnType = (type, require, requiredMessage) => {
 };
 
 const challengeSchema = new Schema({
-  fixtureId: { type: Schema.Types.ObjectId, ref: 'fixture' },
-  predictionId:  { type: Schema.Types.ObjectId, ref: 'prediction' },
+  fixtureId: { type: Schema.Types.ObjectId, ref: 'fixture', require:true },
+  predictionId:  { type: Schema.Types.ObjectId, ref: 'prediction', require:true },
   type: returnType(String, true, "Questionaire ID is required!"),
-  owner: { type: Schema.Types.ObjectId, ref: 'user' },
+  owner: { type: Schema.Types.ObjectId, ref: 'user', require:true  },
+  amount:  returnType(String, true, "amount is required!"),
   slot: returnType(Number,true, "Slot is required"),
+  txnhash: returnType(String, true, "hash is required"),
   participants: [{
-    userid:{ type: Schema.Types.ObjectId, ref: 'user' }
+    userid:{ type: Schema.Types.ObjectId, ref: 'user' },
+    txnhash: returnType(String, false, "hash is required"), 
   }],
   status:returnType(String,true,"status is required"),
   created_at: {

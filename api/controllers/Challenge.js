@@ -4,7 +4,9 @@ const Challenge = require("../models/Challenge");
 module.exports = {
     // @dev creates a duo or trio challenge
     createChallege: expressAsyncHandler( async(req,res)=>{
+      try {
         const { predictionId, type, participants } = req.body;
+        console.log(req.body)
         const existingChallenge = await Challenge.findOne({predictionId: predictionId})
         if(existingChallenge){
             if( existingChallenge.participants.length<1 && type=="duo"){
@@ -18,9 +20,14 @@ module.exports = {
           //if not exist create a challenege
           const newChallenge  = await Challenge.create(req.body);
           if(newChallenge){
-              return res.status(201).json({"msg":`New ${newChallenge.type} Challenge created`})
+              return res.status(201).json({newChallenge})
           }
         }
+        
+      } catch (error) {
+          console.log(error)
+      }
+       
 
     }),
   
@@ -39,7 +46,13 @@ module.exports = {
   getChallengesByChallenger: expressAsyncHandler( async(request, response)=>{
     const challenges = await Challenge.find({participants: { $eleMatch:{userid: request.params.userid} }})
     response.status(200).json(challenges);
+  }),
+
+  /**
+   * @dev get all chaleenges filter by duo and trio 
+   */
+
+  getChallengesByFilter: expressAsyncHandler ( async (req, res)=>{
+    console.log(req.body)
   })
-
-
 }
