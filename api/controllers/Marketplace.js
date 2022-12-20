@@ -148,4 +148,9 @@ module.exports = {
       });
     }
   }),
+
+  closeMarketplace: expressAsyncHandler( async(req,res)=>{
+    await Marketplace.updateOne({marketplaceSlug: req.params.slug},{closed:true})
+    res.send("closed");
+  })
 };
