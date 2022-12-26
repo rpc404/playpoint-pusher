@@ -6,7 +6,6 @@ module.exports = {
     createChallege: expressAsyncHandler( async(req,res)=>{
       try {
         const { predictionId, type, participants } = req.body;
-        console.log(req.body)
         const existingChallenge = await Challenge.findOne({predictionId: predictionId})
         if(existingChallenge){
             if( existingChallenge.participants.length<1 && type=="duo"){
@@ -27,7 +26,7 @@ module.exports = {
       } catch (error) {
           console.log(error)
       }
-       
+    
 
     }),
   

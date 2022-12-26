@@ -23,9 +23,28 @@ module.exports = {
    * @dev Get All Marketplaces
    */
   getMarketplaces: expressAsyncHandler(async (req, res) => {
-    const allMarketplace = await Marketplace.find();
+
+    const allMarketplace = await Marketplace.aggregate([
+      {
+        $lookup:{
+          from:"fixtures",
+          localField:"marketplaceSlug",
+          foreignField:"marketplaceSlug",
+          as:"fixtures"
+        }
+      },{
+         $lookup:{
+          from:"predictions",
+          as:"prediction",
+          localField:"marketplaceSlug",
+          foreignField:"marketplaceSlug"
+         }
+      }
+    ]);
+
     res.status(200).json({
       marketplaces: allMarketplace,
+      
     });
   }),
 
