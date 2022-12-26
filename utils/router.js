@@ -69,7 +69,7 @@ APIRouter.get("/marketplace-specific/:marketplaceSlug", getSpecificMarketplace)
     newMarketplace
   )
   .patch("/update-marketplace/:marketplaceSlug", authorize, updateMarketplace)
-  .delete("/delete-marketplace/:marketplaceSlug", authorize, deleteMarketplace)
+  .delete("/delete-marketplace/:marketplaceSlug", deleteMarketplace)
   .patch("/close-marketplace/:slug", closeMarketplace);
 
 
