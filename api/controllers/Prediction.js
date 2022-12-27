@@ -30,6 +30,7 @@ module.exports = {
     });
     res.status(200).json({
       status: "success",
+      prediction: _prediction,
       message: "Prediction created successfully!",
     });
   }),
