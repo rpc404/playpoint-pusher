@@ -8,7 +8,8 @@ const app = require("express")(),
   http = require("http").Server(app),
   { dbConfig } = require("./utils/db"),
   APIRouter = require("./utils/router"),
-  PORT = process.env.PORT || 4000;
+  PORT = process.env.PORT || 4000,
+  compression = require("compression");
 
 require("dotenv").config();
 
@@ -17,7 +18,8 @@ app
   .use(morgan("dev"))
   .use(bodyParser.json())
   .use(bodyParser.urlencoded({ extended: true }))
-  .use(helmet());
+  .use(helmet())
+  .use(compression());
 
 global.__basedir = __dirname;
 
@@ -44,8 +46,8 @@ app
     res.json({ message: "Welcome to V1 Playpoint API! 👌" });
   })
   // this must be used for production
-  // .use("/api/v1", apiLimiter, APIRouter)
-  .use("/api/v1", APIRouter)
+  .use("/api/v1", apiLimiter, APIRouter)
+  // .use("/api/v1", APIRouter)
   .get("*", (req, res) =>
     res.status(404).json({
       msg: "404 Not Found! 🦟",
