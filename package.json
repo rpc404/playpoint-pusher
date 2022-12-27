@@ -12,6 +12,7 @@
   "dependencies": {
     "@truffle/hdwallet-provider": "^2.1.2",
     "bcrypt": "^5.0.1",
+    "bluebird": "^3.7.2",
     "body-parser": "^1.20.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.2",
@@ -23,6 +24,7 @@
     "find-config": "^1.0.0",
     "helmet": "^6.0.0",
     "imagekit": "^4.1.1",
+    "ioredis": "^5.2.4",
     "jsonwebtoken": "^8.5.1",
     "mongo-sanitize": "^1.1.0",
     "mongoose": "^6.6.3",

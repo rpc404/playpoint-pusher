@@ -5,14 +5,25 @@ const Questionaires = require("../models/Questionaire");
 const Prediction = require("../models/Prediction");
 const { sendReward } = require("../../utils/RewardCornJob");
 const socket = require("../../utils/socket");
+const { redis } = require("../../utils/Redis");
 
 module.exports = {
   /**
    * @dev Get All Results
    */
   getResultController: expressAsyncHandler(async (req, res) => {
-    const results = await Result.find();
-    res.status(200).json({ data: results });
+    redis.get("results", async (err, result) => {
+      if (err) throw err;
+      if (result) {
+        return res.status(200).json({
+          results: JSON.parse(result),
+        });
+      } else {
+        const results = await Result.find();
+        redis.set("results", JSON.stringify(results));
+        res.status(200).json({ results });
+      }
+    })
   }),
   /**
    *  @dev Get User Results
@@ -20,16 +31,17 @@ module.exports = {
   getUserResultController: expressAsyncHandler(async (req, res) => {
     const results = Result.find({ wallet: req.params.walletID })
       .populate("predictionId")
-      .sort("created_at").exec((err,resp)=>{
+      .sort("created_at")
+      .exec((err, resp) => {
         var options = {
-          path: 'predictionId.fixtureId',
-          model: 'fixture'
-        }
+          path: "predictionId.fixtureId",
+          model: "fixture",
+        };
         if (err) return res.json(500);
-         Result.populate(resp, options, function (err, data) {
+        Result.populate(resp, options, function (err, data) {
           res.json(data);
         });
-      })
+      });
     // res.status(200).json(results);
   }),
 
@@ -215,13 +227,11 @@ module.exports = {
         });
       }
     });
-    res
-      .status(200)
-      .json({
-        message: `Results Created Successfully! pool of ${
-          totalPoolAmount / 0.02
-        }`,
-      });
+    res.status(200).json({
+      message: `Results Created Successfully! pool of ${
+        totalPoolAmount / 0.02
+      }`,
+    });
     // console.log(final2)
     return final2.map(async (_data) => {
       const _prediction = await Result.findOne({

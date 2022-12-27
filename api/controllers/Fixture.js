@@ -4,59 +4,47 @@ const { sanitizeQueryInput } = require("../../utils/QuerySanitizer");
 const FixtureStatus = require("../models/FixtureStatus");
 const { default: mongoose } = require("mongoose");
 const Prediction = require("../models/Prediction");
+const { redis } = require("../../utils/Redis");
 
 module.exports = {
   /**
    * @dev Get Specific Marketplaces
    */
   getSpecificFixtureController: expressAsyncHandler(async (req, res) => {
-    const data = await Fixture.findOne({
-      _id: sanitizeQueryInput(req.params["id"]),
-    });
-    const { status } = await FixtureStatus.findOne({fixtureId: sanitizeQueryInput(req.params["id"])}) || {status: null}
-    res.status(200).send({
-      fixture: data,
-      status 
+    redis.get(`fixture-${req.params["id"]}`, async (err, result) => {
+      if (err) throw err;
+      if (result) {
+        return res.status(200).json({
+          fixture: JSON.parse(result),
+        });
+      } else {
+        const data = await Fixture.findOne({
+          _id: sanitizeQueryInput(req.params["id"]),
+        });
+        const { status } = (await FixtureStatus.findOne({
+          fixtureId: sanitizeQueryInput(req.params["id"]),
+        })) || { status: null };
+        redis.set(`fixture-${req.params["id"]}`, JSON.stringify(data));
+        res.status(200).send({
+          fixture: data,
+          status,
+        });
+      }
     });
   }),
 
   /**
    * @dev Get All Fixtures
    */
-  getFixturesController: expressAsyncHandler(async (req, res) =>{
-    const data = await Fixture.aggregate([
-      {
-        $lookup: {
-          from: "fixture-statuses",
-          localField: "_id",
-          foreignField: "fixtureId",
-          as: "status",
-        },
-      },
-      {
-        $lookup: {
-          from: "predictions",
-          localField: "_id",
-          foreignField: "fixtureId",
-          as: "predictions",
-        },
-      },
-      ]).exec()
-    
-
-    res.status(200).json({
-      fixtures: data,
-    })
-  }
-  ),
-
-  /**
-   * @dev Get Fixtures by Marketplace Slug
-   */
-  getFixturesByMarketplaceSlugController: expressAsyncHandler(
-    async (req, res) =>
-      res.status(200).json({
-        fixtures: await Fixture.aggregate([
+  getFixturesController: expressAsyncHandler(async (req, res) => {
+    redis.get("fixtures", async (err, result) => {
+      if (err) throw err;
+      if (result) {
+        return res.status(200).json({
+          fixtures: JSON.parse(result),
+        });
+      } else {
+        const data = await Fixture.aggregate([
           {
             $lookup: {
               from: "fixture-statuses",
@@ -66,14 +54,72 @@ module.exports = {
             },
           },
           {
-            $match: {
-              marketplaceSlug: sanitizeQueryInput(
-                req.params["marketplaceSlug"]
-              ),
+            $lookup: {
+              from: "predictions",
+              localField: "_id",
+              foreignField: "fixtureId",
+              as: "predictions",
             },
           },
-        ]).exec(),
-      })
+        ]).exec();
+        redis.set("fixtures", JSON.stringify(data));
+        res.status(200).json({
+          fixtures: data,
+        });
+      }
+    });
+  }),
+
+  /**
+   * @dev Get Fixtures by Marketplace Slug
+   */
+  getFixturesByMarketplaceSlugController: expressAsyncHandler(
+    async (req, res) => {
+      redis.get(
+        `fixtures-${req.params["marketplaceSlug"]}`,
+        async (err, result) => {
+          if (err) throw err;
+          if (result) {
+            return res.status(200).json({
+              fixtures: JSON.parse(result),
+            });
+          } else {
+            const data = await Fixture.aggregate([
+              {
+                $match: {
+                  marketplaceSlug: sanitizeQueryInput(
+                    req.params["marketplaceSlug"]
+                  ),
+                },
+              },
+              {
+                $lookup: {
+                  from: "fixture-statuses",
+                  localField: "_id",
+                  foreignField: "fixtureId",
+                  as: "status",
+                },
+              },
+              {
+                $lookup: {
+                  from: "predictions",
+                  localField: "_id",
+                  foreignField: "fixtureId",
+                  as: "predictions",
+                },
+              },
+            ]).exec();
+            redis.set(
+              `fixtures-${req.params["marketplaceSlug"]}`,
+              JSON.stringify(data)
+            );
+            res.status(200).json({
+              fixtures: data,
+            });
+          }
+        }
+      );
+    }
   ),
 
   /**
@@ -93,7 +139,7 @@ module.exports = {
       AwayTeamScore: req.body.AwayTeamScore || 0,
     });
 
-    await FixtureStatus.create({fixtureId: data._id})
+    await FixtureStatus.create({ fixtureId: data._id });
     res.status(200).json({
       message: "New Fixture created successfully!",
       response: data,
@@ -146,8 +192,6 @@ module.exports = {
       await tempFixture.save();
     }
 
-    
-
     tempFixture &&
       res.status(200).json({
         message: "Updated Fixture Successfully!",
@@ -167,9 +211,6 @@ module.exports = {
   ),
 
   createLeaderboard: expressAsyncHandler(async (req, res) => {
-    res.status(200).json({
-      
-    });
+    res.status(200).json({});
   }),
-
 };

@@ -1,63 +1,65 @@
 const {
-  getMarketplaces,
-  newMarketplace,
-  updateMarketplace,
-  deleteMarketplace,
-  getSpecificMarketplace,
-  closeMarketplace,
-} = require("../api/controllers/Marketplace");
-const {
-  getSpecificFixtureController,
-  getFixturesController,
-  newFixtureController,
-  updateFixturesController,
-  deleteFixturesController,
-  getFixturesByMarketplaceSlugController,
-  updateFixtureStatus,
-} = require("../api/controllers/Fixture");
-const {
-  getQuestionaireController,
-  newQuestionaireController,
-  updateQuestionaireController,
-  deleteQuestionaireController,
-  getSpecificQuestionaireController,
-} = require("../api/controllers/Questionaires");
-const { multerUpload } = require("./MulterConfig");
-const {
-  getResultController,
-  newResultController,
-  updateResultController,
-  deleteResultController,
-  getUserResultController,
-} = require("../api/controllers/Result");
-const { getCountStatus } = require("../api/helpers/adminStats");
-const {
-  getLeaderboards,
-  createLeaderboard,
-  updateLeaderboard,
-  deleteLeaderboard,
-  getLeaderboardsByMarketplaceSlug,
-  getTopUsers,
-} = require("../api/controllers/Leaderboards");
-const {
-  setPrediction,
-  getPredictions,
-  getPredictionById,
-} = require("../api/controllers/Prediction");
-const { marketplaceStats } = require("../api/helpers/marketplaceStats");
-
-const {
-  setProfile,
-  getAdmins,
-  addAdmin,
-  removeAdmin,
-  getAdmin,
-  getProfile,
-} = require("../api/controllers/Profile");
-
-const APIRouter = require("express").Router();
-const { authorize } = require("../api/middlewares/authorize");
-const { getChallengesByUser, getChallengesByChallenger, createChallege } = require("../api/controllers/Challenge");
+    getMarketplaces,
+    newMarketplace,
+    updateMarketplace,
+    deleteMarketplace,
+    getSpecificMarketplace,
+    closeMarketplace,
+  } = require("../api/controllers/Marketplace"),
+  {
+    getSpecificFixtureController,
+    getFixturesController,
+    newFixtureController,
+    updateFixturesController,
+    deleteFixturesController,
+    getFixturesByMarketplaceSlugController,
+    updateFixtureStatus,
+  } = require("../api/controllers/Fixture"),
+  {
+    getQuestionaireController,
+    newQuestionaireController,
+    updateQuestionaireController,
+    deleteQuestionaireController,
+    getSpecificQuestionaireController,
+  } = require("../api/controllers/Questionaires"),
+  { multerUpload } = require("./MulterConfig"),
+  {
+    getResultController,
+    newResultController,
+    updateResultController,
+    deleteResultController,
+    getUserResultController,
+  } = require("../api/controllers/Result"),
+  { getCountStatus } = require("../api/helpers/adminStats"),
+  {
+    getLeaderboards,
+    createLeaderboard,
+    updateLeaderboard,
+    deleteLeaderboard,
+    getLeaderboardsByMarketplaceSlug,
+    getTopUsers,
+  } = require("../api/controllers/Leaderboards"),
+  {
+    setPrediction,
+    getPredictions,
+    getPredictionById,
+  } = require("../api/controllers/Prediction"),
+  { marketplaceStats } = require("../api/helpers/marketplaceStats"),
+  {
+    setProfile,
+    getAdmins,
+    addAdmin,
+    removeAdmin,
+    getAdmin,
+    getProfile,
+  } = require("../api/controllers/Profile"),
+  APIRouter = require("express").Router(),
+  { authorize } = require("../api/middlewares/authorize"),
+  {
+    getChallengesByUser,
+    getChallengesByChallenger,
+    createChallege,
+  } = require("../api/controllers/Challenge");
 
 // @note Marketplace API Endpoints
 APIRouter.get("/marketplace-specific/:marketplaceSlug", getSpecificMarketplace)
@@ -71,7 +73,6 @@ APIRouter.get("/marketplace-specific/:marketplaceSlug", getSpecificMarketplace)
   .patch("/update-marketplace/:marketplaceSlug", authorize, updateMarketplace)
   .delete("/delete-marketplace/:marketplaceSlug", deleteMarketplace)
   .patch("/close-marketplace/:slug", closeMarketplace);
-
 
 // @note Fixture API Endpoints
 APIRouter.get("/fixture", getFixturesController)
@@ -106,7 +107,7 @@ APIRouter.get("/questionaires", getQuestionaireController)
 
 // @note Results API Endpoints
 APIRouter.get("/results", getResultController)
-  .get("/results/:walletID",getUserResultController)
+  .get("/results/:walletID", getUserResultController)
   .post("/new-result", authorize, newResultController)
   .patch("/update-result", authorize, updateResultController)
   .delete("/delete-result", authorize, deleteResultController);
@@ -134,17 +135,13 @@ APIRouter.get("/admin-stats", getCountStatus).get(
  */
 
 APIRouter.get("/challenges-by-user/:userid", getChallengesByUser)
-        .get("/challenges-by-participants/:userid", getChallengesByChallenger)
-        .post("/new-challenge", createChallege);
+  .get("/challenges-by-participants/:userid", getChallengesByChallenger)
+  .post("/new-challenge", createChallege);
 
 APIRouter.post("/profile", setProfile);
 APIRouter.get("/admins", authorize, getAdmins)
   .post("/admin-add", authorize, addAdmin)
   .post("/delete-admin", authorize, removeAdmin)
-  .get(
-    "/admin/:wallet",
-    authorize,
-    getAdmin
-  );
+  .get("/admin/:wallet", authorize, getAdmin);
 
 module.exports = APIRouter;

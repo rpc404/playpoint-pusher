@@ -1,14 +1,14 @@
 // file deepcode ignore UseCsurfForExpress: CSRF Protection will disallow Socket to function properly!
-const app = require("express")();
-const helmet = require("helmet");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const morgan = require("morgan");
-const rateLimit = require("express-rate-limit");
-const http = require("http").Server(app);
-const { dbConfig } = require("./utils/db");
-const APIRouter = require("./utils/router");
-const PORT = process.env.PORT || 4000;
+const app = require("express")(),
+  helmet = require("helmet"),
+  cors = require("cors"),
+  bodyParser = require("body-parser"),
+  morgan = require("morgan"),
+  rateLimit = require("express-rate-limit"),
+  http = require("http").Server(app),
+  { dbConfig } = require("./utils/db"),
+  APIRouter = require("./utils/router"),
+  PORT = process.env.PORT || 4000;
 
 require("dotenv").config();
 
@@ -41,7 +41,6 @@ const apiLimiter = rateLimit({
 
 app
   .get("/", (req, res) => {
-   
     res.json({ message: "Welcome to V1 Playpoint API! 👌" });
   })
   // this must be used for production
