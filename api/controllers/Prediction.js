@@ -2,11 +2,15 @@ const expressAsyncHandler = require("express-async-handler");
 const Prediction = require("../models/Prediction");
 const socket = require("../../utils/socket");
 const Questionaire = require("../models/Questionaire");
-const { default: mongoose, isValidObjectId, isObjectIdOrHexString } = require("mongoose");
+const {
+  default: mongoose,
+  isValidObjectId,
+  isObjectIdOrHexString,
+} = require("mongoose");
 
 module.exports = {
   setPrediction: expressAsyncHandler(async (req, res) => {
-    const {questionaireId, answers} = req.body.data;
+    const { questionaireId, answers } = req.body.data;
     const question = await Questionaire.findById(questionaireId);
     const all = question.questionaires.questions;
     let _prediction = await Prediction.create(req.body.data);
@@ -38,7 +42,7 @@ module.exports = {
     const userid = req.query.userid || "";
     const fixtureid = req.query.fixtureid || "";
     const data = userid
-      ? await Prediction.find({ predictedBy: userid }).populate('fixtureId')
+      ? await Prediction.find({ predictedBy: userid }).populate("fixtureId")
       : fixtureid
       ? await Prediction.aggregate([
           {
@@ -56,9 +60,9 @@ module.exports = {
           },
         ]).exec()
       : await Prediction.find();
-     let _data = [];
-      if(fixtureid && data.length===0){
-        _data = await Prediction.aggregate([
+    let _data = [];
+    if (fixtureid && data.length === 0) {
+      _data = await Prediction.aggregate([
         {
           $lookup: {
             from: "profiles",
@@ -72,9 +76,8 @@ module.exports = {
             fixtureId: fixtureid,
           },
         },
-      ]).exec()
-      
-      }
+      ]).exec();
+    }
     res.status(200).json({
       status: "success",
       message: "Predictions fetched successfully!",
@@ -83,22 +86,22 @@ module.exports = {
   }),
   getPredictionById: expressAsyncHandler(async (req, res) => {
     const pid = req.params.pid;
-    const data =  await Prediction.aggregate([
-          {
-            $lookup: {
-              from: "profiles",
-              localField: "predictedBy",
-              foreignField: "walletID",
-              as: "user",
-            },
-          },
-          {
-            $match: {
-              _id: mongoose.Types.ObjectId(pid),
-            },
-          },
-        ]).exec()
-    const questions = await Questionaire.findById(data[0].questionaireId)
+    const data = await Prediction.aggregate([
+      {
+        $lookup: {
+          from: "profiles",
+          localField: "predictedBy",
+          foreignField: "walletID",
+          as: "user",
+        },
+      },
+      {
+        $match: {
+          _id: mongoose.Types.ObjectId(pid),
+        },
+      },
+    ]).exec();
+    const questions = await Questionaire.findById(data[0].questionaireId);
 
     res.status(200).json({
       status: "success",

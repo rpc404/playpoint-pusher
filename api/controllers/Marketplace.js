@@ -1,50 +1,74 @@
-var fs = require("fs");
-const expressAsyncHandler = require("express-async-handler");
-const Marketplace = require("../models/Marketplace");
-const Fixures = require("../models/Fixture");
-const { imageKit } = require("../../utils/ImageKit");
-const { sanitizeQueryInput } = require("../../utils/QuerySanitizer");
+const fs = require("fs"),
+  expressAsyncHandler = require("express-async-handler"),
+  Marketplace = require("../models/Marketplace"),
+  { imageKit } = require("../../utils/ImageKit"),
+  { sanitizeQueryInput } = require("../../utils/QuerySanitizer");
+const { redis } = require("../../utils/Redis");
 
 module.exports = {
   /**
    * @dev Get Specific Marketplaces
    */
   getSpecificMarketplace: expressAsyncHandler(async (req, res) => {
-    res
-      .json({
-        marketplace: await Marketplace.findOne({
-          marketplaceSlug: sanitizeQueryInput(req.params["marketplaceSlug"]),
-        }),
-      })
-      .status(200);
+    redis.get(
+      `marketplace-${req.params["marketplaceSlug"]}`,
+      async (err, result) => {
+        if (err) throw err;
+        if (result) {
+          return res.status(200).json({
+            marketplace: JSON.parse(result),
+          });
+        } else {
+          const marketplace = await Marketplace.findOne({
+            marketplaceSlug: sanitizeQueryInput(req.params["marketplaceSlug"]),
+          });
+          redis.set(
+            `marketplace-${req.params["marketplaceSlug"]}`,
+            JSON.stringify(marketplace)
+          );
+          res.status(200).json({
+            marketplace,
+          });
+        }
+      }
+    );
   }),
 
   /**
    * @dev Get All Marketplaces
    */
   getMarketplaces: expressAsyncHandler(async (req, res) => {
+    redis.get("marketplaces", async (err, result) => {
+      if (err) throw err;
+      if (result) {
+        return res.status(200).json({
+          marketplaces: JSON.parse(result),
+        });
+      } else {
+        const allMarketplace = await Marketplace.aggregate([
+          {
+            $lookup: {
+              from: "fixtures",
+              localField: "marketplaceSlug",
+              foreignField: "marketplaceSlug",
+              as: "fixtures",
+            },
+          },
+          {
+            $lookup: {
+              from: "predictions",
+              as: "prediction",
+              localField: "marketplaceSlug",
+              foreignField: "marketplaceSlug",
+            },
+          },
+        ]);
 
-    const allMarketplace = await Marketplace.aggregate([
-      {
-        $lookup:{
-          from:"fixtures",
-          localField:"marketplaceSlug",
-          foreignField:"marketplaceSlug",
-          as:"fixtures"
-        }
-      },{
-         $lookup:{
-          from:"predictions",
-          as:"prediction",
-          localField:"marketplaceSlug",
-          foreignField:"marketplaceSlug"
-         }
+        redis.set("marketplaces", JSON.stringify(allMarketplace));
+        res.status(200).json({
+          marketplaces: allMarketplace,
+        });
       }
-    ]);
-
-    res.status(200).json({
-      marketplaces: allMarketplace,
-      
     });
   }),
 
@@ -62,8 +86,7 @@ module.exports = {
     /**
      * @note fallback for marketplace is required
      */
-    const { tags } =
-      req.body;
+    const { tags } = req.body;
     const { filename } = req.file;
 
     // deepcode ignore PT: Heroku won't expose file system
@@ -168,8 +191,11 @@ module.exports = {
     }
   }),
 
-  closeMarketplace: expressAsyncHandler( async(req,res)=>{
-    await Marketplace.updateOne({marketplaceSlug: req.params.slug},{closed:true})
+  closeMarketplace: expressAsyncHandler(async (req, res) => {
+    await Marketplace.updateOne(
+      { marketplaceSlug: req.params.slug },
+      { closed: true }
+    );
     res.send("closed");
-  })
+  }),
 };

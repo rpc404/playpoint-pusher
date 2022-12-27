@@ -1,31 +1,52 @@
 const { sanitizeQueryInput } = require("../../utils/QuerySanitizer");
 const expressAsyncHandler = require("express-async-handler");
 const Questionaire = require("../models/Questionaire");
+const { redis } = require("../../utils/Redis");
 
 module.exports = {
   getSpecificQuestionaireController: expressAsyncHandler(async (req, res) => {
-    res.status(200).json({
-      questionaire: await Questionaire.find({
-        fixtureId: sanitizeQueryInput(req.params["fixtureId"]),
-      }),
+    redis.get("questionaire", async (err, result) => {
+      if (err) throw err;
+      if (result) {
+        return res.status(200).json({
+          questionaire: JSON.parse(result),
+        });
+      } else {
+        const questionaire = await Questionaire.find({
+          fixtureId: sanitizeQueryInput(req.params["questionaireId"]),
+        });
+        redis.set("questionaire", JSON.stringify(questionaire));
+        res.status(200).json({
+          questionaire,
+        });
+      }
     });
   }),
   /**
    * @dev Get All Questionaires
    */
   getQuestionaireController: expressAsyncHandler(async (req, res) => {
-    const data = await Questionaire.aggregate([
-      {
-        $lookup: {
-          from: "fixtures",
-          localField: "fixtureId",
-          foreignField: "_id",
-          as: "fixtures",
-        },
-      },
-    ]).exec()
-   
-    res.status(200).json({ questionaires: data });
+    redis.get("questionaires", async (err, result) => {
+      if (err) throw err;
+      if (result) {
+        return res.status(200).json({
+          questionaires: JSON.parse(result),
+        });
+      } else {
+        const questionaires = await Questionaire.aggregate([
+          {
+            $lookup: {
+              from: "fixtures",
+              localField: "fixtureId",
+              foreignField: "_id",
+              as: "fixtures",
+            },
+          },
+        ]).exec();
+        redis.set("questionaires", JSON.stringify(questionaires));
+        res.status(200).json({ questionaires });
+      }
+    });
   }),
   /**
    * @dev New Questionaires
