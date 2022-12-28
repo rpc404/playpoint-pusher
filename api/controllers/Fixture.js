@@ -203,13 +203,15 @@ module.exports = {
   /**
    * @dev Delete Fixture
    */
-  deleteFixturesController: expressAsyncHandler(async (req, res) =>
+  deleteFixturesController: expressAsyncHandler(async (req, res) =>{
+    
     res.status(200).json({
       message: "Deleted Fixture Successfully!",
       response: await Fixture.deleteOne({
         _id: sanitizeQueryInput(req.params["id"]),
       }),
     })
+  }
   ),
 
   createLeaderboard: expressAsyncHandler(async (req, res) => {
