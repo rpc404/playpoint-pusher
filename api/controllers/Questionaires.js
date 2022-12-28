@@ -67,7 +67,7 @@ module.exports = {
     };
 
     const tempQuestionaire = Questionaire.findOne(query);
-
+    redis.del("questionaire"+tempQuestionaire.fixtureId);
     res.status(200).json({
       message: "Questionaire updated successfully!",
       response: await Questionaire.updateOne(query, {
