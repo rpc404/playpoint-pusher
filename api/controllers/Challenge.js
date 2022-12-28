@@ -1,4 +1,5 @@
 const expressAsyncHandler = require("express-async-handler");
+const { sanitizeQueryInput } = require("../../utils/QuerySanitizer");
 const { redis } = require("../../utils/Redis");
 const Challenge = require("../models/Challenge");
 
@@ -6,20 +7,22 @@ module.exports = {
   // @dev creates a duo or trio challenge
   createChallege: expressAsyncHandler(async (req, res) => {
     try {
-      const { predictionId, type, participants } = req.body;
+      const { predictionId, participants } = req.body;
       const existingChallenge = await Challenge.findOne({
         predictionId: predictionId,
       });
+      redis.del("prediction"+predictionId);
       if (existingChallenge) {
-        if (existingChallenge.participants.length < 1 && type == "duo") {
+        if (existingChallenge.participants.length < existingChallenge.slot) {
           existingChallenge.participants.push(participants);
           existingChallenge.status = "active";
           await existingChallenge.save();
-          res.status(201).json({ msg: "Duo challenge created" });
+          res.status(201).json({ challenge: existingChallenge });
           return;
         }
       } else {
         //if not exist create a challenege
+
         const newChallenge = await Challenge.create(req.body);
         if (newChallenge) {
           return res.status(201).json({ newChallenge });
@@ -56,6 +59,7 @@ module.exports = {
   /**
    * @dev Get challenges by participants
    */
+
 
   getChallengesByChallenger: expressAsyncHandler(async (request, response) => {
     redis.get(`challenges-${request.params.userid}`, async (err, result) => {
