@@ -7,7 +7,7 @@ module.exports = {
   getSpecificQuestionaireController: expressAsyncHandler(async (req, res) => {
     redis.get("questionaire"+sanitizeQueryInput(req.params["fixtureId"]), async (err, result) => {
       if (err) throw err;
-      if (result) {
+      if (JSON.parse(result).length > 0) {
         return res.status(200).json({
           questionaire: JSON.parse(result),
         });
@@ -15,6 +15,7 @@ module.exports = {
         const questionaire = await Questionaire.find({
           fixtureId: sanitizeQueryInput(req.params["fixtureId"]),
         });
+     
         redis.set("questionaire"+sanitizeQueryInput(req.params["fixtureId"]), JSON.stringify(questionaire));
         res.status(200).json({
           questionaire,
