@@ -7,6 +7,9 @@ const {
   isValidObjectId,
   isObjectIdOrHexString,
 } = require("mongoose");
+const { redis } = require("../../utils/Redis");
+const { sanitizeQueryInput } = require("../../utils/QuerySanitizer");
+
 
 module.exports = {
   setPrediction: expressAsyncHandler(async (req, res) => {
@@ -85,28 +88,48 @@ module.exports = {
     });
   }),
   getPredictionById: expressAsyncHandler(async (req, res) => {
-    const pid = req.params.pid;
-    const data = await Prediction.aggregate([
-      {
-        $lookup: {
-          from: "profiles",
-          localField: "predictedBy",
-          foreignField: "walletID",
-          as: "user",
-        },
-      },
-      {
-        $match: {
-          _id: mongoose.Types.ObjectId(pid),
-        },
-      },
-    ]).exec();
-    const questions = await Questionaire.findById(data[0].questionaireId);
 
-    res.status(200).json({
-      status: "success",
-      message: "Predictions fetched successfully!",
-      data: [...data, questions],
-    });
+    const pid = req.params.pid;
+    redis.get("prediction"+sanitizeQueryInput(req.params["pid"]), async (err, result) => {
+      if (err) throw err;
+      if (result) {
+        res.status(200).json({
+          status: "success",
+          message: "Predictions fetched successfully!",
+          data: JSON.parse(result),
+        });
+      }else{
+        const data = await Prediction.aggregate([
+          {
+            $lookup: {
+              from: "profiles",
+              localField: "predictedBy",
+              foreignField: "walletID",
+              as: "user",
+            },
+          },
+          {
+            $lookup: {
+              from: "challenges",
+              localField: "_id",
+              foreignField: "predictionId",
+              as: "challenges",
+            },
+          },
+          {
+            $match: {
+              _id: mongoose.Types.ObjectId(pid),
+            },
+          },
+        ]).exec();
+        const questions = await Questionaire.findById(data[0].questionaireId);
+        redis.set("prediction"+sanitizeQueryInput(req.params["pid"]),JSON.stringify([...data, questions]))
+        res.status(200).json({
+          status: "success",
+          message: "Predictions fetched successfully!",
+          data: [...data, questions],
+        });
+      }
+    })
   }),
 };

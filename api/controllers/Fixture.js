@@ -192,6 +192,7 @@ module.exports = {
       await tempFixture.save();
     }
 
+    redis.del("fixtures");
     tempFixture &&
       res.status(200).json({
         message: "Updated Fixture Successfully!",
