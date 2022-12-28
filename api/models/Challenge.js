@@ -25,7 +25,7 @@ const challengeSchema = new Schema({
   slot: returnType(Number,true, "Slot is required"),
   txnhash: returnType(String, true, "hash is required"),
   participants: [{
-    userid:{ type: Schema.Types.ObjectId, ref: 'user' },
+    prediction:{ type: Schema.Types.ObjectId, ref: 'prediction' },
     txnhash: returnType(String, false, "hash is required"), 
   }],
   status:returnType(String,true,"status is required"),
