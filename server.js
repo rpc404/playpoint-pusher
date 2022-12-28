@@ -1,3 +1,5 @@
+const { redis } = require("./utils/Redis");
+
 // file deepcode ignore UseCsurfForExpress: CSRF Protection will disallow Socket to function properly!
 const app = require("express")(),
   helmet = require("helmet"),
@@ -43,6 +45,7 @@ const apiLimiter = rateLimit({
 
 app
   .get("/", (req, res) => {
+  
     res.json({ message: "Welcome to V1 Playpoint API! 👌" });
   })
   // this must be used for production
@@ -55,6 +58,7 @@ app
   );
 
 http.listen(PORT, () => {
+  redis.flushall();
   console.log(`👾 : Server listening on ${PORT}!`);
 });
 
