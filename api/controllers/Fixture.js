@@ -76,7 +76,7 @@ module.exports = {
   getFixturesByMarketplaceSlugController: expressAsyncHandler(
     async (req, res) => {
       redis.get(
-        `fixtures-${req.params["marketplaceSlug"]}`,
+        `fixture-${req.params["marketplaceSlug"]}`,
         async (err, result) => {
           if (err) throw err;
           if (result) {
@@ -110,7 +110,7 @@ module.exports = {
               },
             ]).exec();
             redis.set(
-              `fixtures-${req.params["marketplaceSlug"]}`,
+              `fixture-${req.params["marketplaceSlug"]}`,
               JSON.stringify(data)
             );
             res.status(200).json({
@@ -138,7 +138,7 @@ module.exports = {
       HomeTeamScore: req.body.HomeTeamScore || 0,
       AwayTeamScore: req.body.AwayTeamScore || 0,
     });
-    redis.del("fixtures-"+req.body.marketplaceSlug);
+    redis.del("fixture-"+req.body.marketplaceSlug);
     await FixtureStatus.create({ fixtureId: data._id });
     res.status(200).json({
       message: "New Fixture created successfully!",
@@ -150,10 +150,9 @@ module.exports = {
    */
   updateFixturesController: expressAsyncHandler(async (req, res) => {
     const query = { _id: req.params["id"] };
-
     const tempFixture = await Fixture.findOne(query);
     console.log(req.body);
-    redis.del("fixtures-"+tempFixture.marketplaceSlug);
+    redis.del("fixture-"+tempFixture.marketplaceSlug);
     tempFixture &&
       res.status(200).json({
         message: "Updated Fixture Successfully!",
@@ -183,8 +182,7 @@ module.exports = {
     const query = { fixtureId: req.params["fixtureId"] };
     const operation = req.params["status"];
     let tempFixture = await FixtureStatus.findOne(query);
-
-
+    
     if (!tempFixture) {
       const data = req.params;
       tempFixture = await FixtureStatus.create(data);
@@ -193,7 +191,7 @@ module.exports = {
       await tempFixture.save();
     }
 
-    redis.del("fixtures-"+tempFixture.marketplaceSlug);
+    redis.del("fixture-"+tempFixture.marketplaceSlug);
     tempFixture &&
       res.status(200).json({
         message: "Updated Fixture Successfully!",
@@ -204,7 +202,8 @@ module.exports = {
    * @dev Delete Fixture
    */
   deleteFixturesController: expressAsyncHandler(async (req, res) =>{
-    
+    const {marketplaceSlug} = await Fixture.findOne({_id: req.params["id"]})
+    redis.del("fixture-"+marketplaceSlug)
     res.status(200).json({
       message: "Deleted Fixture Successfully!",
       response: await Fixture.deleteOne({
