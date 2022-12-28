@@ -45,7 +45,7 @@ const apiLimiter = rateLimit({
 
 app
   .get("/", (req, res) => {
-  
+    redis.flushall();
     res.json({ message: "Welcome to V1 Playpoint API! 👌" });
   })
   // this must be used for production
