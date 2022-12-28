@@ -138,7 +138,7 @@ module.exports = {
       HomeTeamScore: req.body.HomeTeamScore || 0,
       AwayTeamScore: req.body.AwayTeamScore || 0,
     });
-
+    redis.del("fixtures-"+req.body.marketplaceSlug);
     await FixtureStatus.create({ fixtureId: data._id });
     res.status(200).json({
       message: "New Fixture created successfully!",
@@ -153,7 +153,7 @@ module.exports = {
 
     const tempFixture = await Fixture.findOne(query);
     console.log(req.body);
-
+    redis.del("fixtures-"+tempFixture.marketplaceSlug);
     tempFixture &&
       res.status(200).json({
         message: "Updated Fixture Successfully!",
@@ -184,6 +184,7 @@ module.exports = {
     const operation = req.params["status"];
     let tempFixture = await FixtureStatus.findOne(query);
 
+
     if (!tempFixture) {
       const data = req.params;
       tempFixture = await FixtureStatus.create(data);
@@ -192,7 +193,7 @@ module.exports = {
       await tempFixture.save();
     }
 
-    redis.del("fixtures");
+    redis.del("fixtures-"+tempFixture.marketplaceSlug);
     tempFixture &&
       res.status(200).json({
         message: "Updated Fixture Successfully!",
