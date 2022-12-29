@@ -42,6 +42,7 @@ module.exports = {
     });
   }),
   getPredictions: expressAsyncHandler(async (req, res) => {
+
     const userid = req.query.userid || "";
     const fixtureid = req.query.fixtureid || "";
     const data = userid
@@ -54,6 +55,14 @@ module.exports = {
               localField: "predictedBy",
               foreignField: "walletID",
               as: "user",
+            },
+          },
+          {
+            $lookup: {
+              from: "challenges",
+              localField: "_id",
+              foreignField: "predictionId",
+              as: "challenges",
             },
           },
           {
@@ -87,8 +96,8 @@ module.exports = {
       data: data.concat(_data),
     });
   }),
-  getPredictionById: expressAsyncHandler(async (req, res) => {
 
+  getPredictionById: expressAsyncHandler(async (req, res) => {
     const pid = req.params.pid;
     redis.get("prediction"+sanitizeQueryInput(req.params["pid"]), async (err, result) => {
       if (err) throw err;

@@ -7,9 +7,10 @@ module.exports = {
   // @dev creates a duo or trio challenge
   createChallege: expressAsyncHandler(async (req, res) => {
     try {
-      const { predictionId, participants } = req.body;
+      const { predictionId, participants,type } = req.body;
       const existingChallenge = await Challenge.findOne({
         predictionId: predictionId,
+        type: type
       });
       redis.del("prediction"+predictionId);
       if (existingChallenge) {
