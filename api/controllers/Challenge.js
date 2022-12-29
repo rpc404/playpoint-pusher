@@ -2,6 +2,7 @@ const expressAsyncHandler = require("express-async-handler");
 const { sanitizeQueryInput } = require("../../utils/QuerySanitizer");
 const { redis } = require("../../utils/Redis");
 const Challenge = require("../models/Challenge");
+const { getPredictionById } = require("./Prediction");
 
 module.exports = {
   // @dev creates a duo or trio challenge
@@ -83,10 +84,20 @@ module.exports = {
   }),
 
   /**
-   * @dev get all chaleenges filter by duo and trio
+   * @dev get all challenges by id
    */
 
-  getChallengesByFilter: expressAsyncHandler(async (req, res) => {
-    console.log(req.body);
+  getChallengesById: expressAsyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const challenges = await Challenge.findOne({_id: id}).populate(["fixtureId"]).populate({
+      path:"participants",
+      populate:{
+        path:"prediction",
+        populate:{
+          path:"predictedBy"
+        }
+      }
+    })
+    res.json(challenges);
   }),
 };
