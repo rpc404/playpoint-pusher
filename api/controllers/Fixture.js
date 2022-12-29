@@ -14,9 +14,7 @@ module.exports = {
     redis.get(`fixture-${req.params["id"]}`, async (err, result) => {
       if (err) throw err;
       if (result) {
-        return res.status(200).json({
-          fixture: JSON.parse(result),
-        });
+        return res.status(200).json(JSON.parse(result));
       } else {
         const data = await Fixture.findOne({
           _id: sanitizeQueryInput(req.params["id"]),
