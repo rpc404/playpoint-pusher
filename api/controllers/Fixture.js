@@ -24,7 +24,7 @@ module.exports = {
         const { status } = (await FixtureStatus.findOne({
           fixtureId: sanitizeQueryInput(req.params["id"]),
         })) || { status: null };
-        redis.set(`fixture-${req.params["id"]}`, JSON.stringify(data));
+        redis.set(`fixture-${req.params["id"]}`, JSON.stringify({fixture:data, status}));
         res.status(200).send({
           fixture: data,
           status,
@@ -151,7 +151,7 @@ module.exports = {
   updateFixturesController: expressAsyncHandler(async (req, res) => {
     const query = { _id: req.params["id"] };
     const tempFixture = await Fixture.findOne(query);
-    console.log(req.body);
+
     redis.del("fixture-"+tempFixture.marketplaceSlug);
     tempFixture &&
       res.status(200).json({
