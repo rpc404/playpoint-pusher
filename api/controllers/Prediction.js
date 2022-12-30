@@ -27,6 +27,14 @@ module.exports = {
         },
       },
       {
+        $lookup: {
+          from: "challenges",
+          localField: "_id",
+          foreignField: "predictionId",
+          as: "challenges",
+        },
+      },
+      {
         $match: {
           _id: _prediction._id,
         },
