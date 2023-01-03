@@ -74,6 +74,14 @@ module.exports = {
             },
           },
           {
+            $lookup: {
+              from: "results",
+              localField: "_id",
+              foreignField: "predictionId",
+              as: "results",
+            },
+          },
+          {
             $match: {
               fixtureId: mongoose.Types.ObjectId(fixtureid),
             },

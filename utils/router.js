@@ -60,6 +60,7 @@ const {
     getChallengesByChallenger,
     createChallege,
     getChallengesById,
+    getChallenges,
   } = require("../api/controllers/Challenge");
 
 // @note Marketplace API Endpoints
@@ -138,6 +139,7 @@ APIRouter.get("/admin-stats", getCountStatus).get(
 APIRouter.get("/challenges-by-user/:userid", getChallengesByUser)
   .get("/challenges-by-participants/:userid", getChallengesByChallenger)
   .post("/new-challenge", createChallege)
+  .get("/get-challenges/", getChallenges)
   .get("/get-challenge/:id", getChallengesById);
 
 APIRouter.post("/profile", setProfile);
