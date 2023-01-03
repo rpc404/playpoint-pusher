@@ -89,7 +89,7 @@ module.exports = {
 
   getChallengesById: expressAsyncHandler(async (req, res) => {
     const { id } = req.params;
-    const challenges = await Challenge.findOne({_id: id}).populate(["fixtureId"]).populate({
+    const challenges = await Challenge.findOne({_id: id}).populate(["fixtureId","predictionId"]).populate({
       path:"participants",
       populate:{
         path:"prediction",
@@ -98,6 +98,58 @@ module.exports = {
         }
       }
     })
+    console.log(challenges)
     res.json(challenges);
   }),
+
+  /**
+   * @dev Get all challenegs
+   */
+  getChallenges: expressAsyncHandler( async (req,res)=>{
+    const status = req.query.status || ""
+    const query = status ? {status: status} : {}
+    const data = await Challenge.aggregate([
+      {
+      $lookup:{
+        from:"fixtures",
+        localField:"fixtureId",
+        foreignField:"_id",
+        as:"fixtureId"
+      },
+    },
+    {
+      $lookup:{
+        from:"predictions",
+        localField:"predictionId",
+        foreignField:"_id",
+        as:"predictionId"
+      },
+    },
+    {
+      $unwind:{
+        path:"$fixtureId",
+      }
+    },
+    {
+      $unwind:{
+        path:"$predictionId"
+      }
+    },
+    {
+      $lookup:{
+        from:"profiles",
+        localField:"predictionId.predictedBy",
+        foreignField:"walletID",
+        as:"owner"
+      }
+    },
+    {
+      $unwind:{
+        path:"$owner"
+      }
+    },
+  ])
+    res.status(200).json(data);
+    
+  })
 };
