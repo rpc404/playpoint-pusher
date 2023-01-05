@@ -107,43 +107,46 @@ module.exports = {
     const challengeWinner = [];
     for (let index = 0; index < challenges.length; index++) {
       const challenge = challenges[index];
-      const owner = result__.filter(ch=>ch.predictionId.toString()==challenge.predictionId._id.toString());
-      challenge.participants.map(_challenge=>{
-        const challenger = result__.filter(ch=>ch.predictionId.toString()==_challenge.prediction._id.toString());
-        // challenger wins
-        if(challenger[0].points > owner[0].points){
+      if(challenge.type=="duo"){
+        const owner = result__.filter(ch=>ch.predictionId.toString()==challenge.predictionId._id.toString());
+        challenge.participants.map(_challenge=>{
+          const challenger = result__.filter(ch=>ch.predictionId.toString()==_challenge.prediction._id.toString());
+          // challenger wins
+          if(challenger[0].points > owner[0].points){
+              challengeWinner.push({
+              challengeId:challenge._id,
+                wallet: challenger[0].wallet,
+                amount: (challenge.amount/0.02) * 2,
+                type:challenge.type
+              })
+          }
+          // owner wins
+          if(challenger[0].points < owner[0].points){
             challengeWinner.push({
-            challengeId:challenge._id,
-              wallet: challenger[0].wallet,
+              challengeId:challenge._id,
+              wallet: challenge.predictionId.predictedBy,
               amount: (challenge.amount/0.02) * 2,
               type:challenge.type
             })
         }
-        // owner wins
-        if(challenger[0].points < owner[0].points){
+        // equal points
+        if(challenger[0].points == owner[0].points){
           challengeWinner.push({
             challengeId:challenge._id,
             wallet: challenge.predictionId.predictedBy,
-            amount: (challenge.amount/0.02) * 2,
+            amount: (challenge.amount/0.02),
+            type:challenge.type
+          })
+          challengeWinner.push({
+            challengeId:challenge._id,
+            wallet: challenger[0].wallet,
+            amount: (challenge.amount/0.02),
             type:challenge.type
           })
       }
-      // equal points
-      if(challenger[0].points == owner[0].points){
-        challengeWinner.push({
-          challengeId:challenge._id,
-          wallet: challenge.predictionId.predictedBy,
-          amount: (challenge.amount/0.02),
-          type:challenge.type
-        })
-        challengeWinner.push({
-          challengeId:challenge._id,
-          wallet: challenger[0].wallet,
-          amount: (challenge.amount/0.02),
-          type:challenge.type
-        })
-    }
-      }) 
+        }) 
+      }
+     
     }
     // find out the winner of each challenges
   
