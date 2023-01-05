@@ -3,10 +3,11 @@ const { sanitizeQueryInput } = require("../../utils/QuerySanitizer");
 const Result = require("../models/Result");
 const Questionaires = require("../models/Questionaire");
 const Prediction = require("../models/Prediction");
-const { sendReward } = require("../../utils/RewardCornJob");
+const { sendReward, sendChallengeReward } = require("../../utils/RewardCornJob");
 const socket = require("../../utils/socket");
 const { redis } = require("../../utils/Redis");
 const Challenge = require("../models/Challenge");
+const ChallengeResult = require("../models/ChallengeResult");
 
 module.exports = {
   /**
@@ -65,10 +66,9 @@ module.exports = {
           path:"predictedBy"
         }
       }
-    })
-    
-    console.log(challenges);
+    }).populate("predictionId")
 
+   
     const { points } = _questions.questionaires;
     let result__ = [];
     let totalPoolAmount = 0;
@@ -102,8 +102,51 @@ module.exports = {
         isPaid: false,
       };
     }
-
-
+   
+    // now check predictions in challenegs and points of each 
+    const challengeWinner = [];
+    for (let index = 0; index < challenges.length; index++) {
+      const challenge = challenges[index];
+      const owner = result__.filter(ch=>ch.predictionId.toString()==challenge.predictionId._id.toString());
+      challenge.participants.map(_challenge=>{
+        const challenger = result__.filter(ch=>ch.predictionId.toString()==_challenge.prediction._id.toString());
+        // challenger wins
+        if(challenger[0].points > owner[0].points){
+            challengeWinner.push({
+            challengeId:challenge._id,
+              wallet: challenger[0].wallet,
+              amount: (challenge.amount/0.02) * 2,
+              type:challenge.type
+            })
+        }
+        // owner wins
+        if(challenger[0].points < owner[0].points){
+          challengeWinner.push({
+            challengeId:challenge._id,
+            wallet: challenge.predictionId.predictedBy,
+            amount: (challenge.amount/0.02) * 2,
+            type:challenge.type
+          })
+      }
+      // equal points
+      if(challenger[0].points == owner[0].points){
+        challengeWinner.push({
+          challengeId:challenge._id,
+          wallet: challenge.predictionId.predictedBy,
+          amount: (challenge.amount/0.02),
+          type:challenge.type
+        })
+        challengeWinner.push({
+          challengeId:challenge._id,
+          wallet: challenger[0].wallet,
+          amount: (challenge.amount/0.02),
+          type:challenge.type
+        })
+    }
+      }) 
+    }
+    // find out the winner of each challenges
+  
     
     // Group wallets by points
     const ranks = result__.reduce((res, d) => {
@@ -203,7 +246,6 @@ module.exports = {
 
     
 
-    console.log(pseudo_final);
     const final = pseudo_final.map((final, i) => {
       const shared_reward = final["reward"] / final.length || 0;
       final["reward"] = {};
@@ -223,14 +265,14 @@ module.exports = {
       }
     });
 
-    
+  
     res.status(200).json({
       message: `Results Created Successfully! pool of ${
         totalPoolAmount / 0.02
       }`,
     });
-    // // console.log(final2)
-    // return final2.map(async (_data) => {
+    // console.log(final2)
+    // final2.map(async (_data) => {
     //   const _prediction = await Result.findOne({
     //     predictionId: _data.predictionId,
     //   });
@@ -244,7 +286,7 @@ module.exports = {
     //     if (bc.hash) {
     //       _data.isPaid = true;
     //       _data.txnhash = bc.hash;
-    //       console.log(bc.hash);
+    //       // console.log(bc.hash);
     //       socket.trigger(
     //         "result-channel",
     //         "newresult",
@@ -259,6 +301,38 @@ module.exports = {
     //     await Result.create(_data);
     //   }
     // });
+
+
+    return challengeWinner.map( async winner=>{
+      // console.log(winner);
+      const _challenge = await ChallengeResult.findOne({
+            challengeId: winner.challengeId,
+          });
+          if (!_challenge) {
+            const bc = await sendChallengeReward(
+              winner.type,
+              winner.challengeId,
+              winner.wallet,
+              winner.amount > 0 ? winner.amount : 0
+            );
+            if (bc.hash) {
+              winner.txnhash = bc.hash;
+              console.log(bc.hash);
+              socket.trigger(
+                "result-channel",
+                "newresult",
+                JSON.stringify({
+                  wallet: winner.wallet,
+                  reward: winner.amount,
+                  hash: bc.hash,
+                })
+              );
+            }
+            await ChallengeResult.create(winner);
+          }
+    })
+
+
   }),
   /**
    * @dev Update Results

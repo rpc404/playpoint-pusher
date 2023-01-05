@@ -43,10 +43,21 @@ module.exports = {
               predictionId,
               wallet,
               true,
-             ethers.utils.parseEther(String(amount))
+            ethers.utils.parseEther(String(amount))
             ) : {msg: "send"}
             return reward;
             
-        })
+        }),
+  sendChallengeReward: (async (type, challengeId, wallet,amount) => { 
+    const reward = amount > 0 ? await PredictionContract.functions
+    .sendChallengeReward(
+      type,
+      challengeId,
+      wallet,
+    ethers.utils.parseEther(String(amount))
+    ) : {msg: "send"}
+    return reward;
+    
+}),   
 }
 
