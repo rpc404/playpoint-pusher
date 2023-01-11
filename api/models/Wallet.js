@@ -16,10 +16,18 @@ const returnType = (type, require, requiredMessage) => {
   };
 };
 
-const predictionSchema = new Schema({
-  walletID: returnType(String, true, "Fixture Id is required"),
-  username: returnType(String, false, "Prediction Type is required!"),
-  email: returnType(String, false, "Not required")
+const walletSchema = new Schema({
+  userid: { type: Schema.Types.ObjectId, ref: 'profile' },
+  wallets: [{
+    address:{type: String, required:true},
+    privateKey:{type: String, required:true},
+    ref:{type:String, required: true}
+  }],
+  created_at: {
+    type: Date,
+    default: Date.now(),
+  },
+  updated_at: Date,
 });
 
-module.exports = Model("profile", predictionSchema);
+module.exports = Model("wallets", walletSchema);
