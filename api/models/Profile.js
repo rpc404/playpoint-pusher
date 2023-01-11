@@ -19,6 +19,7 @@ const returnType = (type, require, requiredMessage) => {
 const predictionSchema = new Schema({
   walletID: returnType(String, true, "Fixture Id is required"),
   username: returnType(String, false, "Prediction Type is required!"),
+  email: returnType(String, false, "Not required")
 });
 
 module.exports = Model("profile", predictionSchema);

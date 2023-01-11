@@ -1,3 +1,5 @@
+const { handleEmail, handleToken } = require("../api/controllers/Auth");
+
 const {
     getMarketplaces,
     newMarketplace,
@@ -147,5 +149,11 @@ APIRouter.get("/admins", authorize, getAdmins)
   .post("/admin-add", authorize, addAdmin)
   .post("/delete-admin", authorize, removeAdmin)
   .get("/admin/:wallet", authorize, getAdmin);
+
+
+APIRouter.post("/authenticate", handleEmail);
+APIRouter.post("/verify", handleToken);
+
+
 
 module.exports = APIRouter;
