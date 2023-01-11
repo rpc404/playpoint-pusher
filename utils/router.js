@@ -1,4 +1,4 @@
-const { handleEmail, handleToken } = require("../api/controllers/Auth");
+const { handleEmail, handleToken, handleOTP } = require("../api/controllers/Auth");
 
 const {
     getMarketplaces,
@@ -153,6 +153,8 @@ APIRouter.get("/admins", authorize, getAdmins)
 
 APIRouter.post("/authenticate", handleEmail);
 APIRouter.post("/verify", handleToken);
+APIRouter.post("/otplogin", handleOTP);
+
 
 
 

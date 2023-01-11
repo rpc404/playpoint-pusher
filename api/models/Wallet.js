@@ -20,7 +20,8 @@ const walletSchema = new Schema({
   userid: { type: Schema.Types.ObjectId, ref: 'profile' },
   wallets: [{
     address:{type: String, required:true},
-    privateKey:{type: String, required:true}
+    privateKey:{type: String, required:true},
+    ref:{type:String, required: true}
   }],
   created_at: {
     type: Date,
