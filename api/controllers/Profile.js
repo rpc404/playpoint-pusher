@@ -1,6 +1,5 @@
 const Profile = require("../models/Profile");
 const expressAsyncHandler = require("express-async-handler");
-const { sanitizeQueryInput } = require("../../utils/QuerySanitizer");
 const { uniqueNamesGenerator, adjectives, names  } = require('unique-names-generator');
 const Admin = require("../models/Admin");
 var jwt = require('jsonwebtoken');
