@@ -49,42 +49,47 @@ module.exports = {
   }),
   handleToken: expressAsyncHandler(async (request, response) => {
     const { token, email } = request.body;
-    const _verify = await Token.findOneAndDelete({ email, token });
-    if (_verify) {
-      response.json({ msg: "Account verified" });
-      // create wallet
-      const EthWallet = _EthWallet.default.generate();
-      const TronWallet = TronWebNode.createRandom();
-      const wallet = [
-        {
-          address: EthWallet.getAddressString(),
-          privateKey: EthWallet.getPrivateKeyString(),
-          ref:"ERC"
-        },
-        {
-            address: TronWallet.publicKey,
-            privateKey: TronWallet.privateKey,
-            ref:"TRC"
-        }
-      ];
-      const randomName = uniqueNamesGenerator({ dictionaries: [adjectives, names] }); 
-      const _newUser = await Profile.create({username: randomName, walletID:"", email:email});
-      const _wallets = await Wallet.create({wallets: wallet,userid: _newUser._id});
-      _newUser.walletID = _wallets._id;
-      await _newUser.save();
-      const token = jwt.sign(_newUser.toObject(),"sshh")
-      socket.trigger(`verifiction-${email}`,"verified",{token,_wallets,_newUser});
-      return;
-    } else {
-      return response.json({ msg: "Invalid Token" });
+    const _profile = await Profile.findOne({email: email})
+    if(!_profile){
+      const _verify = await Token.findOneAndDelete({ email, token });
+      if (_verify) {
+        response.json({ msg: "Account verified" });
+        // create wallet
+        const EthWallet = _EthWallet.default.generate();
+        const TronWallet = TronWebNode.createRandom();
+        const wallet = [
+          {
+            address: EthWallet.getAddressString(),
+            privateKey: EthWallet.getPrivateKeyString(),
+            ref:"ERC"
+          },
+          {
+              address: TronWallet.publicKey,
+              privateKey: TronWallet.privateKey,
+              ref:"TRC"
+          }
+        ];
+        const randomName = uniqueNamesGenerator({ dictionaries: [adjectives, names] }); 
+        const _newUser = await Profile.create({username: randomName, walletID:"", email:email});
+        const _wallets = await Wallet.create({wallets: wallet,userid: _newUser._id});
+        _newUser.walletID = _wallets._id;
+        await _newUser.save();
+        const token = jwt.sign(_newUser.toObject(),"sshh")
+        socket.trigger(`verifiction-${email}`,"verified",{token,_wallets,_newUser});
+        return;
+      } else {
+        return response.json({ msg: "Invalid Token" });
+      }
+    }else{
+      response.json({msg: "Invalid Token"})
     }
   }),
 
   handleOTP: expressAsyncHandler(async(request,response)=>{
     const { token, email } = request.body;
     const _verify = await Token.findOneAndDelete({ email, token });
-    if (_verify) {
-        const _user = await Profile.findOne({email: email})
+    const _user = await Profile.findOne({email: email})
+    if (_verify && _user) {
         const token = jwt.sign(_user.toObject(),"sshh")
         const _wallet = await Wallet.findById(_user.walletID);
         return response.json({_user, accessToken:token, _wallet})
