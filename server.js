@@ -11,7 +11,8 @@ const app = require("express")(),
   { dbConfig } = require("./utils/db"),
   APIRouter = require("./utils/router"),
   PORT = process.env.PORT || 4000,
-  compression = require("compression");
+  compression = require("compression"),
+  treblle = require('@treblle/express')
 
 require("dotenv").config();
 
@@ -21,7 +22,11 @@ app
   .use(bodyParser.json())
   .use(bodyParser.urlencoded({ extended: true }))
   .use(helmet())
-  .use(compression());
+  .use(compression())
+  .use(treblle({
+    apiKey: process.env.TREBLLE_API_KEY,
+    projectId: process.env.TREBLLE_PROJECT_ID
+  }));
 
 global.__basedir = __dirname;
 
