@@ -26,7 +26,7 @@
     "express-rate-limit": "^6.6.0",
     "fastest-levenshtein": "^1.0.16",
     "find-config": "^1.0.0",
-    "helmet": "^6.0.0",
+    "helmet": "^7.0.0",
     "imagekit": "^4.1.1",
     "ioredis": "^5.2.4",
     "jsonwebtoken": "^8.5.1",
