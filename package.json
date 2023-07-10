@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@sendgrid/mail": "^7.7.0",
-    "@treblle/express": "^0.0.2",
+    "@treblle/express": "^0.0.6",
     "@truffle/hdwallet-provider": "^2.1.2",
     "bcrypt": "^5.0.1",
     "bluebird": "^3.7.2",
