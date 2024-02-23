@@ -42,7 +42,7 @@
     "unique-names-generator": "^4.7.1"
   },
   "devDependencies": {
-    "nodemon": "2.0.20"
+    "nodemon": "3.1.0"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.6",
